@@ -99,7 +99,7 @@ static GstStaticPadTemplate src_factory = GST_STATIC_PAD_TEMPLATE ("src",
 #define gst_gendc_parser_parent_class parent_class
 G_DEFINE_TYPE (GstGenDCParser, gst_gendc_parser, GST_TYPE_ELEMENT);
 
-GST_ELEMENT_REGISTER_DEFINE (gendcparser, "gendcparser", GST_RANK_NONE,
+GST_ELEMENT_REGISTER_DEFINE (gendc_parser, "gendc-parser", GST_RANK_NONE,
     GST_TYPE_GENDC_PARSER);
 
 static void gst_gendc_parser_set_property (GObject * object,
@@ -261,7 +261,7 @@ gendc_parser_init (GstPlugin * gendc_parser)
    * exchange the string 'Template gendc_parser' with your description
    */
   GST_DEBUG_CATEGORY_INIT (gst_gendc_parser_debug, "gendc_parser",
-      0, "Template gendc_parser");
+      0, "Parse GenDC data");
 
   return GST_ELEMENT_REGISTER (gendcparser, gendc_parser);
 }
@@ -272,7 +272,7 @@ gendc_parser_init (GstPlugin * gendc_parser)
  * compile this code. GST_PLUGIN_DEFINE needs PACKAGE to be defined.
  */
 #ifndef PACKAGE
-#define PACKAGE "myfirstgendc_parser"
+#define PACKAGE "gendc_parser"
 #endif
 
 /* gstreamer looks for this structure to register gendc_parsers
