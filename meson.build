@@ -1,4 +1,4 @@
-project('gendc', 'c', version : '1.19.0.1', license : 'LGPL')
+project('gendc', 'c', version : '1.10', license : 'LGPL')
 
 plugins_install_dir = join_paths(get_option('libdir'), 'gstreamer-1.0')
 

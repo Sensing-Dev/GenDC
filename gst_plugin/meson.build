@@ -9,26 +9,26 @@ cdata.set_quoted('GST_PACKAGE_NAME', 'GenDC Parser Plug-ins')
 cdata.set_quoted('GST_PACKAGE_ORIGIN', 'https://gstreamer.freedesktop.org')
 configure_file(output : 'config.h', configuration : cdata)
 
-gstaudio_dep = dependency('gstreamer-audio-1.0',
-    fallback: ['gst-plugins-base', 'audio_dep'])
+#gstaudio_dep = dependency('gstreamer-audio-1.0',
+#    fallback: ['gst-plugins-base', 'audio_dep'])
 
 # Plugin 1
-plugin_sources = [
-  'src/gstplugin.c'
-  ]
-
-gstpluginexample = library('gstplugin',
-  plugin_sources,
-  c_args: plugin_c_args,
-  dependencies : [gst_dep],
-  install : true,
-  install_dir : plugins_install_dir,
-)
+#plugin_sources = [
+#  'src/gstplugin.c'
+#  ]
+#
+#gstpluginexample = library('gstplugin',
+#  plugin_sources,
+#  c_args: plugin_c_args,
+#  dependencies : [gst_dep],
+#  install : true,
+#  install_dir : plugins_install_dir,
+#)
 
 
 # The gendc_parser Plugin
  gstgendc_parser_sources = [
-  'src/gstgendc_parser.c',
+  'src/gstgendcparser.c',
   ]
 
 gstgendc_parserexample = library('gstgendc_parser',

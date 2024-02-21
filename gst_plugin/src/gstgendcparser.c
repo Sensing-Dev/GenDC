@@ -87,20 +87,19 @@ enum
 static GstStaticPadTemplate sink_factory = GST_STATIC_PAD_TEMPLATE ("sink",
     GST_PAD_SINK,
     GST_PAD_ALWAYS,
-    GST_STATIC_CAPS ("ANY")
+    GST_STATIC_CAPS ("ANY") //TODO
     );
 
 static GstStaticPadTemplate src_factory = GST_STATIC_PAD_TEMPLATE ("src",
     GST_PAD_SRC,
     GST_PAD_ALWAYS,
-    GST_STATIC_CAPS ("ANY")
+    GST_STATIC_CAPS ("ANY") //TODO
     );
 
 #define gst_gendc_parser_parent_class parent_class
 G_DEFINE_TYPE (GstGenDCParser, gst_gendc_parser, GST_TYPE_ELEMENT);
 
-GST_ELEMENT_REGISTER_DEFINE (gendc_parser, "gendc-parser", GST_RANK_NONE,
-    GST_TYPE_GENDC_PARSER);
+GST_ELEMENT_REGISTER_DEFINE (gendc_parser, "gendc-parser", GST_RANK_NONE, GST_TYPE_GENDC_PARSER);
 
 static void gst_gendc_parser_set_property (GObject * object,
     guint prop_id, const GValue * value, GParamSpec * pspec);
@@ -140,6 +139,12 @@ gst_gendc_parser_class_init (GstGenDCParserClass * klass)
       gst_static_pad_template_get (&src_factory));
   gst_element_class_add_pad_template (gstelement_class,
       gst_static_pad_template_get (&sink_factory));
+
+  gst_element_class_set_static_metadata (element_class,
+    "GenDC Parser",
+    "Example/FirstExample",
+    "Shows the basic structure of a plugin",
+    "your name <your.name@your.isp>");
 }
 
 /* initialize the new element
@@ -254,7 +259,7 @@ gst_gendc_parser_chain (GstPad * pad, GstObject * parent, GstBuffer * buf)
  * register the element factories and other features
  */
 static gboolean
-gendc_parser_init (GstPlugin * gendc_parser)
+gendc_parser_init (GstPlugin * plugin)
 {
   /* debug category for filtering log messages
    *
@@ -263,7 +268,7 @@ gendc_parser_init (GstPlugin * gendc_parser)
   GST_DEBUG_CATEGORY_INIT (gst_gendc_parser_debug, "gendc_parser",
       0, "Parse GenDC data");
 
-  return GST_ELEMENT_REGISTER (gendcparser, gendc_parser);
+  return GST_ELEMENT_REGISTER (gendc_parser, plugin);
 }
 
 /* PACKAGE: this is usually set by meson depending on some _INIT macro
@@ -279,9 +284,14 @@ gendc_parser_init (GstPlugin * gendc_parser)
  *
  * exchange the string 'Template gendc_parser' with your gendc_parser description
  */
-GST_PLUGIN_DEFINE (GST_VERSION_MAJOR,
+GST_PLUGIN_DEFINE (
+  GST_VERSION_MAJOR,
     GST_VERSION_MINOR,
     gendc_parser,
-    "gendcparser",
+    "gendc parser plugin",
     gendc_parser_init,
-    PACKAGE_VERSION, GST_LICENSE, GST_PACKAGE_NAME, GST_PACKAGE_ORIGIN)
+    PACKAGE_VERSION, 
+    GST_LICENSE, 
+    GST_PACKAGE_NAME, 
+    GST_PACKAGE_ORIGIN
+    )
