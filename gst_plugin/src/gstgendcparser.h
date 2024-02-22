@@ -52,8 +52,7 @@
 G_BEGIN_DECLS
 
 #define GST_TYPE_GENDC_PARSER (gst_gendc_parser_get_type())
-G_DECLARE_FINAL_TYPE (GstGenDCParser, gst_gendc_parser,
-    GST, GENDC_PARSER, GstElement)
+G_DECLARE_FINAL_TYPE (GstGenDCParser, gst_gendc_parser,GST, GENDC_PARSER, GstElement)
 
 typedef struct _GstGenDCParser
 {
@@ -65,21 +64,21 @@ typedef struct _GstGenDCParser
 }GstGenDCParser;
 
 // part from https://gstreamer.freedesktop.org/documentation/plugin-development/basics/boiler.html?gi-language=c
-/* Standard definition defining a class for this element. */
-typedef struct _GstGenDCParserClass {
-  GstElementClass parent_class;
-} GstGenDCParserClass;
+// /* Standard definition defining a class for this element. */
+// typedef struct _GstGenDCParserClass {
+//   GstElementClass parent_class;
+// } GstGenDCParserClass;
 
 /* Standard macros for defining types for this element.  */
-#define GST_TYPE_GENDC_PARSER (gst_gendc_parser_get_type())
-#define GST_GENDC_PARSER(obj) \
-  (G_TYPE_CHECK_INSTANCE_CAST((obj),GST_TYPE_GENDC_PARSER,GstGenDCParser))
-#define GST_GENDC_PARSER_CLASS(klass)r \
-  (G_TYPE_CHECK_CLASS_CAST((klass),GST_TYPE_GENDC_PARSER,GstGenDCParserClass))
-#define GST_IS_GENDC_PARSER(obj) \
-  (G_TYPE_CHECK_INSTANCE_TYPE((obj),GST_TYPE_GENDC_PARSER))
-#define GST_IS_GENDC_PARSER_CLASS(klass) \
-  (G_TYPE_CHECK_CLASS_TYPE((klass),GST_TYPE_GENDC_PARSER))
+//#define GST_TYPE_GENDC_PARSER (gst_gendc_parser_get_type())
+// #define GST_GENDC_PARSER(obj) \
+//   (G_TYPE_CHECK_INSTANCE_CAST((obj),GST_TYPE_GENDC_PARSER,GstGenDCParser))
+// #define GST_GENDC_PARSER_CLASS(klass)r \
+//   (G_TYPE_CHECK_CLASS_CAST((klass),GST_TYPE_GENDC_PARSER,GstGenDCParserClass))
+// #define GST_IS_GENDC_PARSER(obj) \
+//   (G_TYPE_CHECK_INSTANCE_TYPE((obj),GST_TYPE_GENDC_PARSER))
+// #define GST_IS_GENDC_PARSER_CLASS(klass) \
+//   (G_TYPE_CHECK_CLASS_TYPE((klass),GST_TYPE_GENDC_PARSER))
 
 /* Standard function returning type information. */
 GType gst_gendc_parser_get_type (void);

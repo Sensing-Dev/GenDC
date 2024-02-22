@@ -140,7 +140,7 @@ gst_gendc_parser_class_init (GstGenDCParserClass * klass)
   gst_element_class_add_pad_template (gstelement_class,
       gst_static_pad_template_get (&sink_factory));
 
-  gst_element_class_set_static_metadata (element_class,
+  gst_element_class_set_static_metadata (gstelement_class,
     "GenDC Parser",
     "Example/FirstExample",
     "Shows the basic structure of a plugin",
@@ -156,10 +156,8 @@ static void
 gst_gendc_parser_init (GstGenDCParser * filter)
 {
   filter->sinkpad = gst_pad_new_from_static_template (&sink_factory, "sink");
-  gst_pad_set_event_function (filter->sinkpad,
-      GST_DEBUG_FUNCPTR (gst_gendc_parser_sink_event));
-  gst_pad_set_chain_function (filter->sinkpad,
-      GST_DEBUG_FUNCPTR (gst_gendc_parser_chain));
+  gst_pad_set_event_function (filter->sinkpad, GST_DEBUG_FUNCPTR (gst_gendc_parser_sink_event));
+  gst_pad_set_chain_function (filter->sinkpad, GST_DEBUG_FUNCPTR (gst_gendc_parser_chain));
   GST_PAD_SET_PROXY_CAPS (filter->sinkpad);
   gst_element_add_pad (GST_ELEMENT (filter), filter->sinkpad);
 
