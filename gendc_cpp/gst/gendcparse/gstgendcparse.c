@@ -157,7 +157,7 @@ gst_gendcparse_class_init(GstGenDCParseClass* klass)
 
   gst_element_class_set_static_metadata(gstelement_class,
     "GenDC data Parser",
-    "USB3 Camera/",
+    "USB3 Camera/GenDC Data",
     "Parse gendc data in components",
     "your name <your.name@your.isp>");
 }
