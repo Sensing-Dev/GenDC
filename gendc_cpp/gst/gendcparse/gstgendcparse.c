@@ -1,48 +1,3 @@
-/*
- * GStreamer
- * Copyright (C) 2005 Thomas Vander Stichele <thomas@apestaart.org>
- * Copyright (C) 2005 Ronald S. Bultje <rbultje@ronald.bitfreak.net>
- * Copyright (C) 2024  <<user@hostname.org>>
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- *
- * Alternatively, the contents of this file may be used under the
- * GNU Lesser General Public License Version 2.1 (the "LGPL"), in
- * which case the following provisions apply instead of the ones
- * mentioned above:
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Library General Public License for more details.
- *
- * You should have received a copy of the GNU Library General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
- */
-
  /**
   * SECTION:element-gendcparse
   *
@@ -64,15 +19,18 @@
 #include <glib-object.h>
 
 #include "gstgendcparse.h"
+#include "gendc.h"
 
 GST_DEBUG_CATEGORY_STATIC(gendcparse_debug);
 #define GST_CAT_DEFAULT gendcparse_debug
 
 static void gst_gendcparse_dispose(GObject* object);
 
+// Sink events
 static gboolean gst_gendcparse_sink_activate(GstPad* sinkpad, GstObject* parent);
-static gboolean gst_gendcparse_sink_activate(GstPad* pad, GstObject* parent, GstEvent* event);
 static gboolean gst_gendcparse_sink_activate_mode(GstPad* sinkpad, GstObject* parent, GstPadMode mode, gboolean active);
+static gboolean gst_gendcparse_sink_event(GstPad* pad, GstObject* parent, GstEvent* event);
+
 static gboolean gst_gendcparse_send_event(GstElement* element, GstEvent* event);
 static GstStateChangeReturn gst_gendcparse_change_state(GstElement* element, GstStateChange transition);
 
@@ -157,7 +115,7 @@ gst_gendcparse_class_init(GstGenDCParseClass* klass)
 
   gst_element_class_set_static_metadata(gstelement_class,
     "GenDC data Parser",
-    "USB3 Camera/GenDC Data",
+    "Filter/Converter",
     "Parse gendc data in components",
     "your name <your.name@your.isp>");
 }
@@ -181,6 +139,39 @@ static gboolean gst_gendcparse_pad_query(GstPad* pad, GstObject* parent, GstQuer
   gboolean ret = FALSE;
   return ret;
 }
+gboolean gst_gendcparse_sink_activate_mode(GstPad* sinkpad, GstObject* parent, GstPadMode mode, gboolean active)
+{
+  gboolean ret = FALSE;
+  return ret;
+}
+gboolean gst_gendcparse_sink_event(GstPad* pad, GstObject* parent, GstEvent* event)
+{
+  GstGenDCParse* gendcparse;
+  gboolean ret = FALSE;
+  gendcparse = GST_GENDCPARSE(parent);
+
+  GST_LOG_OBJECT(gendcparse, "Received %s event: %" GST_PTR_FORMAT,
+    GST_EVENT_TYPE_NAME(event), event);
+
+  switch (GST_EVENT_TYPE(event))
+  {
+  case GST_EVENT_CAPS:
+  {
+    GstCaps* caps;
+
+    gst_event_parse_caps(event, &caps);
+    /* do something with the caps */
+
+    /* and forward */
+    ret = gst_pad_event_default(pad, parent, event);
+    break;
+  }
+  default:
+    ret = gst_pad_event_default(pad, parent, event);
+    break;
+  }
+  return ret;
+}
 static gboolean
 gst_gendcparse_send_event(GstElement* element, GstEvent* event) {
   gboolean ret = FALSE;
@@ -197,12 +188,15 @@ gst_gendcparse_change_state(GstElement* element, GstStateChange transition) {
   GstStateChangeReturn ret;
   return ret;
 }
+
 static void
 gst_gendcparse_init(GstGenDCParse* gendcparse)
 {
   gendcparse->sinkpad = gst_pad_new_from_static_template(&sink_factory, "sink");
-  gst_pad_set_event_function(gendcparse->sinkpad, GST_DEBUG_FUNCPTR(gst_gendcparse_sink_activate));
+  gst_pad_set_activate_function(gendcparse->sinkpad, GST_DEBUG_FUNCPTR(gst_gendcparse_sink_activate));
+  gst_pad_set_activatemode_function(gendcparse->sinkpad, GST_DEBUG_FUNCPTR(gst_gendcparse_sink_activate_mode));
   gst_pad_set_chain_function(gendcparse->sinkpad, GST_DEBUG_FUNCPTR(gst_gendcparse_chain));
+  gst_pad_set_event_function(gendcparse->sinkpad, GST_DEBUG_FUNCPTR(gst_gendcparse_sink_event));
   GST_PAD_SET_PROXY_CAPS(gendcparse->sinkpad);
   gst_element_add_pad(GST_ELEMENT(gendcparse), gendcparse->sinkpad);
 
@@ -218,31 +212,54 @@ gst_gendcparse_init(GstGenDCParse* gendcparse)
   // GST_PAD_SET_PROXY_CAPS(gendcparse->srcpad);
   // gst_element_add_pad(GST_ELEMENT(gendcparse), gendcparse->srcpad);
 
-  gendcparse->silent = FALSE;
+  //gendcparse->silent = FALSE;
 }
 
 static gboolean
-gst_gendcparse_parse_file_header(GstElement* element, GstBuffer* buf)
+gst_gendcparse_parse_header(GstElement* element, GstBuffer* buf)
 {
 
   // Check if valid genDC data
 
+  // 1. Should Have signature Signature = “GNDC” 
+  // 2. A GenDC Container must always contain at least one Component Header
   gboolean valid = FALSE;
-  guint32 type;
+  guint32 type = 0;
 
-  if (!valid) // TODO
-    return FALSE;
+  GstMapInfo info;
 
-  if (type) // TODO
+
+  g_return_val_if_fail(buf != NULL, FALSE);
+
+  gst_buffer_map(buf, &info, GST_MAP_READ);
+
+  if (info.size < 12)
+    goto too_small;
+
+  if (!is_gendc_format(info.data))
+    goto not_gendc; 
+  
+  if (!is_valid_gendc(info.data))
     goto not_gendc;
 
   return TRUE;
 
   /* ERRORS */
+too_small:
+  {
+    GST_ELEMENT_ERROR(element, STREAM, WRONG_TYPE, (NULL),
+      ("Not enough data to parse GENDC header (%" G_GSIZE_FORMAT " available,"
+        " %d needed)", info.size, 12));
+    gst_buffer_unmap(buf, &info);
+    gst_buffer_unref(buf);
+    return FALSE;
+  }
 not_gendc:
   {
     GST_ELEMENT_ERROR(element, STREAM, WRONG_TYPE, (NULL),
-      ("Data is not a GenDC format file: 0x%" G_GINT32_MODIFIER "x", type));
+      ("Data is not a GenDC format : 0x%" G_GINT32_MODIFIER "x", type));
+    gst_buffer_unmap(buf, &info);
+    gst_buffer_unref(buf);
     return FALSE;
   }
 }
@@ -253,13 +270,14 @@ gst_gendcparse_stream_init(GstGenDCParse* gendcparse)
   GstFlowReturn res;
   GstBuffer* buf = NULL;
 
-  if ((res = gst_pad_pull_range(gendcparse->sinkpad,
-    gendcparse->offset, 12, &buf)) != GST_FLOW_OK) // TODO
+  guint size = 12; // ToDO
+
+  if ((res = gst_pad_pull_range(gendcparse->sinkpad, gendcparse->offset, 12, &buf)) != GST_FLOW_OK) // TODO
     return res;
-  else if (!gst_gendcparse_parse_file_header(GST_ELEMENT_CAST(gendcparse), buf))
+  else if (!gst_gendcparse_parse_header(GST_ELEMENT_CAST(gendcparse), buf))
     return GST_FLOW_ERROR;
 
-  gendcparse->offset += 12; // TODO
+  //gendcparse->offset += 12; // TODO
 
   return GST_FLOW_OK;
 }
@@ -310,37 +328,14 @@ gst_gendcparse_get_property(GObject* object, guint prop_id,
   }
 }
 
-/* GstElement vmethod implementations */
 
 /* this function handles sink events */
 static gboolean
-gst_gendcparse_sink_activate(GstPad* pad, GstObject* parent, GstEvent* event)
+gst_gendcparse_sink_activate(GstPad* sinkpad, GstObject* parent)
 {
-  GstGenDCParse* gendcparse;
   gboolean ret;
 
-  gendcparse = GST_GENDCPARSE(parent);
-
-  GST_LOG_OBJECT(gendcparse, "Received %s event: %" GST_PTR_FORMAT,
-    GST_EVENT_TYPE_NAME(event), event);
-
-  switch (GST_EVENT_TYPE(event))
-  {
-  case GST_EVENT_CAPS:
-  {
-    GstCaps* caps;
-
-    gst_event_parse_caps(event, &caps);
-    /* do something with the caps */
-
-    /* and forward */
-    ret = gst_pad_event_default(pad, parent, event);
-    break;
-  }
-  default:
-    ret = gst_pad_event_default(pad, parent, event);
-    break;
-  }
+  
   return ret;
 }
 
@@ -354,8 +349,7 @@ gst_gendcparse_chain(GstPad* pad, GstObject* parent, GstBuffer* buf)
 
   gendcparse = GST_GENDCPARSE(parent);
 
-  if (gendcparse->silent == FALSE)
-    g_print("I'm plugged, therefore I'm in.\n");
+
 
   /* just push out the incoming buffer without touching it */
   return gst_pad_push(gendcparse->srcpad, buf);

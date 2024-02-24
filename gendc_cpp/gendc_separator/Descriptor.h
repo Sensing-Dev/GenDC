@@ -6,6 +6,7 @@
 #include <iomanip>
 #include <map>
 #include <tuple>
+#include <array>
 
 #define GENDC_SIGNATURE 0x43444E47
 

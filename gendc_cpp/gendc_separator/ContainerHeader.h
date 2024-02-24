@@ -75,6 +75,10 @@ public:
         return DescriptorSize_;
     }
 
+    int32_t getComponentCount() {
+      return ComponentCount_;
+    }
+
     size_t GenerateDescriptor(char* ptr){
         size_t offset = 0;
         offset = GenerateHeader(ptr);
