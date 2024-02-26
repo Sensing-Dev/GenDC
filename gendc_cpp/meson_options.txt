@@ -1,8 +1,16 @@
+# Feature options for plugins without external deps
 option('gendcparse', type : 'feature', value : 'auto')
+option('gendcseparator-dir', type: 'string', value: 'gendc_separator', description: 'Path to the GenDC Separator directory')
+
+# Common feature options
+option('tests', type : 'feature', value : 'auto', yield : true)
+
 
 # Common options
 option('package-name', type : 'string', yield : true,
        description : 'package name to use in plugins')
 
-option('gendcseparator-dir', type: 'string', value: 'gendc_separator', description: 'Path to the GenDC Separator directory')
-
+# option('package-origin', type : 'string', value : 'Unknown package origin', yield : true,
+#        description : 'package origin URL to use in plugins')
+# option('doc', type : 'feature', value : 'auto', yield: true,
+#        description: 'Enable documentation.')

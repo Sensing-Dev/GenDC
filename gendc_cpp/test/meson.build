@@ -1,8 +1,8 @@
-# Test executable
-test_exe = executable('test_gstplugin',
-    sources: ['test-gendcparse.cpp'],
-    dependencies: [check_dep, gst_dep, gst_base_dep, plugins]
-)
+if not get_option('tests').disabled() and gstcheck_dep.found()
+  subdir('check')
+  subdir('icles')
+endif
 
-# GTest and GStreamer initialization
-test('gendcparse-test', test_exe)
+if not get_option('examples').disabled()
+  subdir('examples')
+endif

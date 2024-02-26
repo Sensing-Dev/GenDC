@@ -57,24 +57,26 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE(GstGenDCParse, gst_gendcparse, GST, GENDCPARSE, GstElement)
 
+struct GstComponent {
+  gpointer header;
+  gpointer data;
+  guint64 data_size;
+};
+
 struct _GstGenDCParse {
   GstElement element;
+  GstStructure 
 
   GstPad *sinkpad, *srcpad;
 
-  guint bytes_per_sample;
-  guint max_buf_size;
+  // descriptor
+  gpointer descriptor;
+  guint64 descriptor_size;
 
-  /* position in data part */
-  guint64 offset;
-  guint64 end_offset;
-  guint64 dataleft;
-  /* offset/length of data part */
-  guint64 datastart;
-  guint64 datasize;
+  // components
+  guint64 component_count;
+  GArray components;
 
-  gboolean ignore_length;
-  gboolean silent;
 };
 
 /* Standard function returning type information. */
