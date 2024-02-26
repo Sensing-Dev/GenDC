@@ -55,33 +55,30 @@ G_BEGIN_DECLS
 #define GST_TYPE_GENDCPARSE \
   (gst_gendcparse_get_type())
 
-
 G_DECLARE_FINAL_TYPE(GstGenDCParse, gst_gendcparse, GST, GENDCPARSE, GstElement)
 
-struct _GstGenDCParse
-{
+struct _GstGenDCParse {
   GstElement element;
 
-  GstPad* sinkpad, * srcpad;
+  GstPad *sinkpad, *srcpad;
 
   guint bytes_per_sample;
   guint max_buf_size;
 
   /* position in data part */
-  guint64	offset;
-  guint64	end_offset;
-  guint64 	dataleft;
+  guint64 offset;
+  guint64 end_offset;
+  guint64 dataleft;
   /* offset/length of data part */
-  guint64 	datastart;
-  guint64 	datasize;
+  guint64 datastart;
+  guint64 datasize;
 
   gboolean ignore_length;
   gboolean silent;
-
 };
 
 /* Standard function returning type information. */
-//GType gst_gendc_parse_get_type (void);
+// GType gst_gendc_parse_get_type (void);
 
 GST_ELEMENT_REGISTER_DECLARE(gendc_parse)
 G_END_DECLS
