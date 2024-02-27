@@ -1,5 +1,5 @@
-#ifndef TOOLS_WRAPPER_H
-#define TOOLS_WRAPPER_H
+#ifndef GENDC_HEADER
+#define GENDC_HEADER
 
 #ifdef __cplusplus
 extern "C" {
@@ -12,10 +12,14 @@ extern "C" {
 bool is_gendc_format(char* buf);
 bool is_valid_gendc(char* buf);
 void get_gendc_version(char* buf, int8_t version[3]);
-int32_t get_descriptor_size(char* buf, int container_version, int8_t version[3]);
 
+void* create_container_descriptor(char* buf);
+int32_t get_descriptor_size(ContainerHeader* header);
+int64_t get_data_size(ContainerHeader* header);
+
+void destroy_component_header(void* header);
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* TOOLS_WRAPPER_H */
+#endif /* GENDC_HEADER */

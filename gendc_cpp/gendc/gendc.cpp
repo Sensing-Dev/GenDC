@@ -11,7 +11,7 @@ extern "C" {
 bool is_gendc_format(char* buf) {
   return isGenDC(buf);
 }
-bool is_valid_gendc(char* buf) {
+bool is_valid_container(char* buf) {
   bool ret = false;
   ContainerHeader container_header(buf);
 
@@ -26,10 +26,23 @@ void get_gendc_version(char* buf, int8_t version[3]) {
   std::copy(v.begin(), v.end(), version);
 }
 
-int32_t get_descriptor_size(char* buf, int container_version, int8_t v[3]) {
-  std::array<int8_t, 3> versionArray;
-  std::copy(v, v + 3, versionArray.begin());
-  return getDescriptorSize(buf, container_version, versionArray);
+void* create_container_descriptor(char* buf) {
+  ContainerHeader* header = new ContainerHeader(buf);
+  return reinterpret_cast<void*>(header);
+}
+
+int32_t get_descriptor_size(ContainerHeader* header) {
+  return header->getDescriptorSize();
+}
+
+int64_t get_data_size(ContainerHeader* header) {
+  return header->getDataSize();
+}
+
+void destroy_component_header(void* header) {
+  ComponentHeader* component_header = reinterpret_cast<ComponentHeader*>(header);
+  delete component_header;
+  header = nullptr;
 }
 
 } // extern "C"

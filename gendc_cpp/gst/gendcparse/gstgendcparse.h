@@ -57,25 +57,39 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE(GstGenDCParse, gst_gendcparse, GST, GENDCPARSE, GstElement)
 
-struct GstComponent {
-  gpointer header;
-  gpointer data;
-  guint64 data_size;
-};
+typedef enum {
+  GST_GENDCPARSE_START,
+  GST_GENDCPARSE_HEADER,
+  GST_GENDCPARSE_DATA
+} GstGenDCParseState;
+
+
 
 struct _GstGenDCParse {
   GstElement element;
-  GstStructure 
+  //GstStructure s;
 
   GstPad *sinkpad, *srcpad;
+  GstPad *src_header_pad, *src_data_pad;
+
+  // Stream
+  GstGenDCParseState state;
+
 
   // descriptor
-  gpointer descriptor;
-  guint64 descriptor_size;
+  gpointer container_header;
+  guint64 container_header_size;
 
   // components
   guint64 component_count;
-  GArray components;
+  GArray *components;
+
+  //component
+  gpointer header;
+  gpointer data;
+  guint64 data_size;
+  guint64 header_size;
+  guint64 part_count;
 
 };
 

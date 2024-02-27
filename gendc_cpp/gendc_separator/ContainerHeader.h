@@ -78,6 +78,10 @@ class ContainerHeader : public Header {
     return ComponentCount_;
   }
 
+   const std::vector<ComponentHeader>& getComponentHeaders() const {
+    return component_header_;
+  }
+
   size_t GenerateDescriptor(char* ptr) {
     size_t offset = 0;
     offset        = GenerateHeader(ptr);
@@ -120,7 +124,7 @@ class ContainerHeader : public Header {
     return DataSize_;
   }
 
-  int64_t getDataSize(int32_t ith_component = 0, int32_t jth_part = 0) {
+  int64_t getPartDataSize(int32_t ith_component = 0, int32_t jth_part = 0) {
     return component_header_.at(ith_component).getDataSize(jth_part);
   }
 

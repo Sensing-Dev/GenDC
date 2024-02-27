@@ -50,5 +50,4 @@ int32_t getDescriptorSize(char* buf, const int container_version, std::array<int
   }
   return descriptor_size;
 }
-
 #endif /*TOOLS_H*/
