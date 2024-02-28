@@ -3,7 +3,7 @@ src = [
   'gendc.cpp'
 ]
 
-gendc = library('gendc',
+gendc = static_library('gendc',
   src,
   c_args : gst_plugins_args,
   include_directories : [include, separator],
@@ -11,4 +11,6 @@ gendc = library('gendc',
   install : true,
   install_dir : plugins_install_dir,
 )
-plugins += [gendc]
+# pkgconfig.generate(gendc, install_dir : plugins_pkgconfig_install_dir)
+
+gendc_dep += [gendc]

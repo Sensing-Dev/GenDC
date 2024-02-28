@@ -15,7 +15,7 @@ endif
 
 plugins_install_dir = join_paths(get_option('libdir'), 'gstreamer-1.0')
 plugins = []
-
+gendc_dep = []
 static_build = get_option('default_library') == 'static'
 
 cc = meson.get_compiler('c')
@@ -118,6 +118,11 @@ gstbase_dep = dependency('gstreamer-base-1.0', version : '>=1.19',
   fallback : ['gstreamer', 'gst_base_dep'])
 
 subdir('gendc')
+
+gendc_dep = declare_dependency(link_with : gendc,
+  include_directories : [include, separator]
+  )
+
 subdir('gst')
 
 ## TODO
@@ -134,8 +139,7 @@ pkgconfig = import('pkgconfig')
 plugins_pkgconfig_install_dir = join_paths(plugins_install_dir, 'pkgconfig')
 
 foreach plugin: plugins
-    pkgconfig.generate(plugin, install_dir: plugins_pkgconfig_install_dir)
-
+  pkgconfig.generate(plugin, install_dir: plugins_pkgconfig_install_dir)
   dep = declare_dependency(link_with: plugin, variables: {'full_path': plugin.full_path()})
   meson.override_dependency(plugin.name(), dep)
   gst_plugins += [dep]
@@ -145,6 +149,8 @@ foreach plugin: plugins
     plugin_names += [plugin.name()]
   endif
 endforeach
+
+# pkgconfig.generate(gendc_dep, install_dir: plugins_pkgconfig_install_dir)
 
 summary({
     'Plugins': plugin_names,

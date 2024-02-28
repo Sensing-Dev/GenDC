@@ -1,6 +1,7 @@
 #ifndef GENDC_HEADER
 #define GENDC_HEADER
 
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -12,10 +13,10 @@ extern "C" {
 bool is_gendc_format(char* buf);
 bool is_valid_gendc(char* buf);
 void get_gendc_version(char* buf, int8_t version[3]);
-
+  
 void* create_container_descriptor(char* buf);
-int32_t get_descriptor_size(ContainerHeader* header);
-int64_t get_data_size(ContainerHeader* header);
+int32_t get_descriptor_size(void* container_header);
+int64_t get_data_size(void* container_header);
 
 void destroy_component_header(void* header);
 #ifdef __cplusplus

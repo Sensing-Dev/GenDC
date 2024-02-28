@@ -31,12 +31,16 @@ void* create_container_descriptor(char* buf) {
   return reinterpret_cast<void*>(header);
 }
 
-int32_t get_descriptor_size(ContainerHeader* header) {
-  return header->getDescriptorSize();
+int32_t get_descriptor_size(void* header) {
+  if (!header) return 0;
+  ContainerHeader* container_header = reinterpret_cast<ContainerHeader*>(header);
+  return container_header->getDescriptorSize();
 }
 
-int64_t get_data_size(ContainerHeader* header) {
-  return header->getDataSize();
+int64_t get_data_size(void* header) {
+  if (!header) return 0;
+  ContainerHeader* container_header = reinterpret_cast<ContainerHeader*>(header);
+  return container_header->getDataSize();
 }
 
 void destroy_component_header(void* header) {
