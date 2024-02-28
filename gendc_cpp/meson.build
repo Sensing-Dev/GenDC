@@ -116,6 +116,11 @@ gst_dep = dependency('gstreamer-1.0', version : '>=1.19',
     required : true, fallback : ['gstreamer', 'gst_dep'])
 gstbase_dep = dependency('gstreamer-base-1.0', version : '>=1.19',
   fallback : ['gstreamer', 'gst_base_dep'])
+gstcheck_dep = dependency('gstreamer-check-1.0', version : '>=1.19',
+  required : get_option('tests'),
+  fallback : ['gstreamer', 'gst_check_dep'])
+libm = cc.find_library('m', required : false)
+
 
 subdir('gendc')
 
@@ -126,12 +131,12 @@ gendc_dep = declare_dependency(link_with : gendc,
 subdir('gst')
 
 ## TODO
-# Find Check using dependency function
-#check_dep = dependency('check', required : false)
-#if not check_dep.found()
-#    check_dep = cc.find_library('check', required : true)
-#endif
-#subdir('tests')
+## Find Check using dependency function
+check_dep = dependency('check', required : false)
+if not check_dep.found()
+   check_dep = cc.find_library('check', required : true)
+endif
+subdir('tests')
 
 plugin_names = []
 gst_plugins = []

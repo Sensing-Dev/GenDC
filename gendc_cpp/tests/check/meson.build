@@ -6,7 +6,7 @@ endif
 
 tests = [
     # [ 'elements/wavparse', false, [gstriff_dep] ],
-    [ 'elements/gendcparse', false, [gstriff_dep] ],
+    [ 'elements/gendcparse' ],
 
 ]
 
@@ -30,7 +30,8 @@ endif
 gst_plugin_scanner_path = join_paths(gst_plugin_scanner_dir, 'gst-plugin-scanner')
 
 # FIXME: check, also + PTHREAD_CFLAGS
-test_deps = [gst_dep, gstbase_dep,  gstcheck_dep, gio_dep, valgrind_dep] + glib_deps
+test_deps = [gst_dep, gstbase_dep,  gstcheck_dep] 
+# + glib_deps
 # test_deps = [gst_dep, gstbase_dep, gstnet_dep, gstcheck_dep, gstaudio_dep,
 #   gstvideo_dep, gstpbutils_dep, gstrtp_dep, gstrtsp_dep, gsttag_dep,
 #   gstapp_dep, gio_dep, valgrind_dep] + glib_deps
@@ -46,7 +47,7 @@ foreach t : tests
   if not skip_test
     env = environment()
     env.set('GST_PLUGIN_SYSTEM_PATH_1_0', '')
-    env.set('GST_STATE_IGNORE_ELEMENTS', state_ignore_elements)
+    # env.set('GST_STATE_IGNORE_ELEMENTS', state_ignore_elements)
     env.set('CK_DEFAULT_TIMEOUT', '20')
     env.set('GST_PLUGIN_LOADING_WHITELIST', 'gstreamer', 'gst-plugins-base',
       'timecode', 'gendc@' + meson.build_root())
@@ -57,7 +58,8 @@ foreach t : tests
     env.set('GST_REGISTRY', join_paths(meson.current_build_dir(), '@0@.registry'.format(test_name)))
     env.set('GST_PLUGIN_SCANNER_1_0', gst_plugin_scanner_path)
     exe = executable(test_name, fname, extra_sources,
-      include_directories : [configinc, libsinc],
+      include_directories : [configinc],
+      # include_directories : [configinc, libsinc],
       c_args : ['-DHAVE_CONFIG_H=1' ] + test_defines,
       dependencies : [libm] + test_deps + extra_deps,
     )
@@ -65,11 +67,4 @@ foreach t : tests
   endif
 endforeach
 
-# Test executable
-test_exe = executable('test_gstplugin',
-    sources: ['test-gendcparse.cpp'],
-    dependencies: [check_dep, gst_dep, gst_base_dep, plugins]
-)
 
-# GTest and GStreamer initialization
-test('gendcparse-test', test_exe)
