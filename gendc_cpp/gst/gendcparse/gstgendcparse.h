@@ -82,7 +82,7 @@ struct _GstGenDCParse {
 
   // components
   guint64 component_count;
-  GArray *components;
+  GPtrArray *components;
 
   //component
   gpointer header;

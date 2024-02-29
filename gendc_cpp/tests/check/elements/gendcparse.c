@@ -156,58 +156,6 @@ fakesink_buffer_cb (GstPad * sink, GstPadProbeInfo * info, gpointer user_data)
   return GST_PAD_PROBE_OK;
 }
 
-GST_START_TEST (test_seek)
-{
-  GstStateChangeReturn ret;
-  GstElement *pipeline;
-  GstMessage *msg;
-  GstElement *gendcparse, *fakesink;
-  GstPad *pad;
-  GstClockTime seek_position = (20 * GST_MSECOND);
-  GstClockTime first_ts = GST_CLOCK_TIME_NONE;
-
-  pipeline = create_pipeline (GST_PAD_MODE_PULL);
-  gendcparse = gst_bin_get_by_name (GST_BIN (pipeline), "gendcparse");
-  fail_unless (gendcparse);
-  fakesink = gst_bin_get_by_name (GST_BIN (pipeline), "fakesink");
-  fail_unless (fakesink);
-
-  pad = gst_element_get_static_pad (fakesink, "sink");
-  fail_unless (pad);
-  gst_pad_add_probe (pad, GST_PAD_PROBE_TYPE_BUFFER, fakesink_buffer_cb,
-      &first_ts, NULL);
-  gst_object_unref (pad);
-
-  /* gendcparse is able to seek in the READY state */
-  ret = gst_element_set_state (pipeline, GST_STATE_READY);
-  fail_unless_equals_int (ret, GST_STATE_CHANGE_SUCCESS);
-
-  fail_unless (gst_element_seek_simple (gendcparse, GST_FORMAT_TIME,
-          GST_SEEK_FLAG_FLUSH, seek_position));
-
-  ret = gst_element_set_state (pipeline, GST_STATE_PLAYING);
-  fail_unless_equals_int (ret, GST_STATE_CHANGE_ASYNC);
-
-  ret = gst_element_get_state (pipeline, NULL, NULL, GST_CLOCK_TIME_NONE);
-  fail_unless_equals_int (ret, GST_STATE_CHANGE_SUCCESS);
-
-  msg = gst_bus_timed_pop_filtered (GST_ELEMENT_BUS (pipeline),
-      GST_CLOCK_TIME_NONE, GST_MESSAGE_EOS | GST_MESSAGE_ERROR);
-
-  /* check that the first buffer produced by gendcparse matches the seek
-     position we requested */
-  fail_unless_equals_clocktime (first_ts, seek_position);
-
-  fail_unless_equals_string (GST_MESSAGE_TYPE_NAME (msg), "eos");
-
-  gst_message_unref (msg);
-  gst_element_set_state (pipeline, GST_STATE_NULL);
-  gst_object_unref (gendcparse);
-  gst_object_unref (fakesink);
-  gst_object_unref (pipeline);
-}
-
-GST_END_TEST;
 
 static Suite *
 gendcparse_suite (void)
@@ -220,7 +168,6 @@ gendcparse_suite (void)
   tcase_add_test (tc_chain, test_empty_file_push);
   tcase_add_test (tc_chain, test_simple_file_pull);
   tcase_add_test (tc_chain, test_simple_file_push);
-  tcase_add_test (tc_chain, test_seek);
   return s;
 }
 

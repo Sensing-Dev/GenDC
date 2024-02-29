@@ -18,15 +18,15 @@ test_defines = [
   '-DGST_USE_UNSTABLE_API',
 ]
 
-pluginsdirs = []
 if gst_dep.type_name() == 'pkgconfig'
-  pbase = dependency('gstreamer-plugins-base-' + api_version, required: true)
-  pluginsdirs = [gst_dep.get_pkgconfig_variable('pluginsdir'),
-                 pbase.get_pkgconfig_variable('pluginsdir')]
-  gst_plugin_scanner_dir = gst_dep.get_pkgconfig_variable('pluginscannerdir')
+    pbase = dependency('gstreamer-plugins-base-' + api_version, required: true)
+    pluginsdirs = [gst_dep.get_variable(pkgconfig: 'pluginsdir'),
+                   pbase.get_variable(pkgconfig: 'pluginsdir')]
+    gst_plugin_scanner_dir = gst_dep.get_variable(pkgconfig: 'pluginscannerdir')
 else
-  gst_plugin_scanner_dir = subproject('gstreamer').get_variable('gst_scanner_dir')
+    gst_plugin_scanner_dir = subproject('gstreamer').get_variable('gst_scanner_dir')
 endif
+
 gst_plugin_scanner_path = join_paths(gst_plugin_scanner_dir, 'gst-plugin-scanner')
 
 # FIXME: check, also + PTHREAD_CFLAGS
@@ -50,9 +50,9 @@ foreach t : tests
     # env.set('GST_STATE_IGNORE_ELEMENTS', state_ignore_elements)
     env.set('CK_DEFAULT_TIMEOUT', '20')
     env.set('GST_PLUGIN_LOADING_WHITELIST', 'gstreamer', 'gst-plugins-base',
-      'timecode', 'gendc@' + meson.build_root())
+      'timecode', 'gendc@' + meson.project_build_root())
     #   'timecode', 'gst-plugins-good@' + meson.build_root())
-    env.set('GST_PLUGIN_PATH_1_0', [meson.build_root()] + pluginsdirs)
+    env.set('GST_PLUGIN_PATH_1_0', [meson.project_build_root()] + pluginsdirs)
     env.set('GSETTINGS_BACKEND', 'memory')
 
     env.set('GST_REGISTRY', join_paths(meson.current_build_dir(), '@0@.registry'.format(test_name)))

@@ -118,13 +118,14 @@ gst_gendcparse_class_init(GstGenDCParseClass* klass) {
                                         "your name <your.name@your.isp>");
 }
 
-GstCaps* gst_genparse_create_component_cpas() {
+GstCaps* gst_genparse_create_component_caps() {
   GstCaps* component_caps = gst_caps_new_simple("application/x-gst-component",
                                                 "header", G_TYPE_POINTER, 0,
                                                 "data", G_TYPE_POINTER, 0,
                                                 "data-size", G_TYPE_UINT64, 0,
                                                 "header-size", G_TYPE_UINT64, 0,
                                                 NULL);
+  return component_caps;
 }
 
 static void
@@ -192,7 +193,7 @@ gst_gendcparse_srcpad_event(GstPad* pad, GstObject* parent, GstEvent* event) {
 }
 static GstStateChangeReturn
 gst_gendcparse_change_state(GstElement* element, GstStateChange transition) {
-  GstStateChangeReturn ret;
+  GstStateChangeReturn ret = GST_STATE_CHANGE_SUCCESS;
   return ret;
 }
 
@@ -236,7 +237,7 @@ gst_gendcparse_init(GstGenDCParse* gendcparse) {
 }
 
 static gboolean
-gst_gendcparse_validate_input(GstElement* element, GstBuffer* buf, guint64 min_size) {
+gst_gendcparse_validate_input(GstGenDCParse* element, GstBuffer* buf, guint64 min_size) {
   // Check if valid genDC data
 
   // 1. Should Have signature Signature = “GNDC”
