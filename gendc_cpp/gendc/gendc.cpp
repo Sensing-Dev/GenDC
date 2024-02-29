@@ -43,10 +43,77 @@ int64_t get_data_size(void* header) {
   return container_header->getDataSize();
 }
 
+void destroy_container_descriptor(void* header) {
+  ComponentHeader* component_header = reinterpret_cast<ComponentHeader*>(header);
+  delete component_header;
+  header = nullptr;
+}
+
+
+bool is_component_format(char* buf) {
+  ComponentHeader component_header(buf);
+  // TODO
+  return component_header.isValidHeaderType();
+}
+bool is_valid_component(char* buf) {
+  bool rc = true;
+  ComponentHeader component_header(buf);
+  return component_header.isValid();
+}
+
+void* create_component_header(char* buf) {
+  ComponentHeader* header = new ComponentHeader(buf);
+  return reinterpret_cast<void*>(header);
+
+}
+int32_t get_component_header_size(void* header) {
+  if (!header) return 0;
+  ComponentHeader* container_header = reinterpret_cast<ComponentHeader*>(header);
+  return container_header->getHeaderSize();
+}
+int64_t get_component_data_size(void* header) {
+  if (!header) return 0;
+  ComponentHeader* container_header = reinterpret_cast<ComponentHeader*>(header);
+  return container_header->getDataSize();
+}
 void destroy_component_header(void* header) {
   ComponentHeader* component_header = reinterpret_cast<ComponentHeader*>(header);
   delete component_header;
   header = nullptr;
+}
+
+bool is_part_format(char* buf) {
+  bool rc = true;
+  PartHeader part_header(buf);
+  // TODO
+  return part_header.isValidHeaderType();
+}
+bool is_part_component(char* buf) {
+  bool rc = true;
+  // TODO
+  PartHeader part_header(buf);
+  return part_header.isValid();
+}
+
+void* create_part_header(char* buf) {
+  PartHeader* header = new PartHeader(buf);
+  return reinterpret_cast<void*>(header);
+}
+int32_t get_part_header_size(void* header) {
+  if (!header) return 0;
+  PartHeader* container_header = reinterpret_cast<PartHeader*>(header);
+  return container_header->getHeaderSize();
+}
+int64_t get_part_data_size(void* header) {
+  if (!header) return 0;
+  PartHeader* container_header = reinterpret_cast<PartHeader*>(header);
+  return container_header->getDataSize();
+}
+void destroy_part_header(void* header) {
+  PartHeader* component_header = reinterpret_cast<PartHeader*>(header);
+  delete component_header;
+  header = nullptr;
+
 }
 
 } // extern "C"

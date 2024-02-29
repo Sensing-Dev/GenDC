@@ -97,7 +97,7 @@ class Header {
 
  protected:
   template <typename T>
-  void DisplayItem(T item, bool hex_format) {
+  void DisplayItem(T item, bool hex_format) const {
     if (sizeof(item) == sizeof(char)) {
       DisplayItem(static_cast<int>(item), hex_format);
     } else {
@@ -111,7 +111,7 @@ class Header {
   }
 
   template <typename T>
-  int DisplayItemInfo(std::string item_name, T item, int level = default_display, bool hex_format = false) {
+  int DisplayItemInfo(std::string item_name, T item, int level = default_display, bool hex_format = false) const {
     std::string indent = display_indent(level);
     int sizeof_item    = sizeof(item);
     std::cout << indent << std::right << std::setw(DISPLAY_ITEM_WIDTH) << item_name;
@@ -121,7 +121,7 @@ class Header {
   }
 
   template <typename T>
-  int DisplayContainer(std::string container_name, const std::vector<T>& container, int level = default_display, bool hex = false) {
+  int DisplayContainer(std::string container_name, const std::vector<T>& container, int level = default_display, bool hex = false) const {
     int total_size = 0;
     if (container.size() > 0) {
       std::string key = container_name;
@@ -136,7 +136,7 @@ class Header {
   }
 
   template <typename T, size_t N>
-  int DisplayContainer(std::string container_name, const std::array<T, N>& container, int level = default_display, bool hex = false) {
+  int DisplayContainer(std::string container_name, const std::array<T, N>& container, int level = default_display, bool hex = false) const {
     int total_size = 0;
     if (container.size() > 0) {
       std::string key = container_name;

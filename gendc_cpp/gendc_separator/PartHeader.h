@@ -86,23 +86,33 @@ class PartHeader : public Header {
     return offset;
   }
 
-  bool isData2DImage() {
+  bool isData2DImage() const {
     return HeaderType_ == 0x4200;
   }
 
-  int64_t getDataOffset() {
+  bool isValidHeaderType() const {
+    // 0x4000 - 0x4FFF
+    return 0x4000 <= HeaderType_ || 0x4FFF >= HeaderType_;
+  }
+  bool isValid() const {
+    // TODO add other checks
+    // 0x4000 - 0x4FFF
+    return 0x4000 <= HeaderType_ || 0x4FFF >= HeaderType_;
+  }
+
+  int64_t getDataOffset() const {
     return DataOffset_;
   }
 
-  int64_t getDataSize() {
+  int64_t getDataSize() const {
     return DataSize_;
   }
 
-  int32_t getOffsetFromTypeSpecific(int32_t kth_typespecific, int32_t typespecific_offset = 0) {
+  int32_t getOffsetFromTypeSpecific(int32_t kth_typespecific, int32_t typespecific_offset = 0) const {
     return offset_for_version[GENDC_V10].at(2) + 8 * (kth_typespecific - 1) + typespecific_offset;
   }
 
-  void DisplayHeaderInfo() {
+  void DisplayHeaderInfo() const {
     int total_size = 0;
     std::cout << "\nPART HEADER" << std::endl;
     total_size += DisplayItemInfo("HeaderType_", HeaderType_, 3, true);
@@ -125,7 +135,7 @@ class PartHeader : public Header {
  private:
   // you need parameters to create the object
 
-  int getNumTypeSpecific(size_t header_size) {
+  int getNumTypeSpecific(size_t header_size) const {
     return static_cast<int>((header_size - 40) / 8);
   }
 
@@ -153,21 +163,21 @@ class PartHeader : public Header {
     return offset;
   }
 
-  int16_t HeaderType_;
-  int16_t Flags_;
+  int16_t HeaderType_ = 0; // Value = 0x4000-0x4FFF should be initialized to 0
+  int16_t Flags_      = 0; // Todo May be Mono12
   // int32_t HeaderSize_;
-  int32_t Format_;
+  int32_t Format_         = 0; // TODO may be mono12
   const int16_t Reserved_ = 0;
-  int16_t FlowId_;
-  int64_t FlowOffset_;
-  int64_t DataSize_;
-  int64_t DataOffset_;
+  int16_t FlowId_         = -1; // starts with 0
+  int64_t FlowOffset_     = -1;
+  int64_t DataSize_       = -1;
+  int64_t DataOffset_     = -1;
 
   // optional
-  std::array<int32_t, 2> Dimension_;
-  std::array<int16_t, 2> Padding_;
-  const int32_t InfoReserved_ = 0;
-  std::vector<int64_t> TypeSpecific_;
+  std::array<int32_t, 2> Dimension_ = {0};
+  std::array<int16_t, 2> Padding_   = {0};
+  const int32_t InfoReserved_       = 0;
+  std::vector<int64_t> TypeSpecific_; // 3 to N
 };
 // }
 #endif /*PARTHEADER_H*/

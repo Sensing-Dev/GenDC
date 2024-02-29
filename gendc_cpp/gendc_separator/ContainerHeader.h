@@ -102,7 +102,7 @@ class ContainerHeader : public Header {
     // - part header type is 0x4200 (GDC_2D) if image is true
     int32_t ith_comp = 0;
     for (ComponentHeader& ch : component_header_) {
-      if (ch.isComponentValid()) {
+      if (ch.isValid()) {
         int32_t jth_part = ch.getFirstAvailableDataOffset(image);
         if (jth_part != -1) {
           return std::make_tuple(ith_comp, jth_part);

@@ -3,6 +3,8 @@
 
 #include "PartHeader.h"
 
+#define GDC_COMPONENT_HEADER 0x2000
+
 class ComponentHeader : public Header {
  public:
   ComponentHeader() {}
@@ -69,16 +71,12 @@ class ComponentHeader : public Header {
     return offset;
   }
 
-  bool isComponentValid() {
-    return Flags_ == 0;
-  }
-
-  int32_t getFirstAvailableDataOffset(bool image) {
+  int32_t getFirstAvailableDataOffset(bool image) const {
     // returns the part header index where
     // - component is valid
     // - part header type is 0x4200 (GDC_2D) if image is true
     int32_t jth_part = 0;
-    for (PartHeader& ph : partheader_) {
+    for (const PartHeader& ph : partheader_) {
       if (image && ph.isData2DImage()) {
         return jth_part;
       } else if (!image && !ph.isData2DImage()) {
@@ -89,19 +87,37 @@ class ComponentHeader : public Header {
     return -1;
   }
 
-  int64_t getDataOffset(int32_t jth_part) {
+  bool isValidHeaderType() const {
+    return GDC_COMPONENT_HEADER == HeaderType_;
+  }
+
+  bool isValid() const {
+    // TODO add other checks
+    // Has at least 1 part
+    return isValidHeaderType() && !partheader_.empty();
+  }
+
+  int64_t getDataOffset(int32_t jth_part) const {
     return partheader_.at(jth_part).getDataOffset();
   }
 
-  int64_t getDataSize(int32_t jth_part) {
+  int64_t getDataSize(int32_t jth_part) const {
     return partheader_.at(jth_part).getDataSize();
   }
 
-  int32_t getOffsetFromTypeSpecific(int32_t jth_part, int32_t kth_typespecific, int32_t typespecific_offset = 0) {
+  int64_t getDataSize() const {
+    int64_t size = 0;
+    for (const auto& part_header : partheader_) {
+      size += part_header.getDataSize();
+    }
+    return size;
+  }
+
+  int32_t getOffsetFromTypeSpecific(int32_t jth_part, int32_t kth_typespecific, int32_t typespecific_offset = 0) const {
     return PartOffset_.at(jth_part) + partheader_.at(jth_part).getOffsetFromTypeSpecific(kth_typespecific, typespecific_offset);
   }
 
-  void DisplayHeaderInfo() {
+  void DisplayHeaderInfo() const {
     int total_size = 0;
     std::cout << "\nCOMPONENT HEADER" << std::endl;
     total_size += DisplayItemInfo("HeaderType_", HeaderType_, 2, true);
@@ -121,7 +137,7 @@ class ComponentHeader : public Header {
 
     total_size += DisplayContainer("PartOffset_", PartOffset_, 2);
 
-    for (PartHeader& ph : partheader_) {
+    for (const PartHeader& ph : partheader_) {
       ph.DisplayHeaderInfo();
     }
   }
@@ -157,19 +173,19 @@ class ComponentHeader : public Header {
   std::vector<PartHeader> partheader_;
 
   const int16_t HeaderType_ = 0x2000;
-  int16_t Flags_;
+  int16_t Flags_            = 0;
   // int32_t HeaderSize_;
-  const int16_t Reserved_ = 0;
-  int16_t GroupId_;
-  int16_t SourceId_;
-  int16_t RegionId_;
-  int32_t RegionOffsetX_;
-  int32_t RegionOffsetY_;
-  int64_t Timestamp_;
-  int64_t TypeId_;
-  int32_t Format_;
+  const int16_t Reserved_  = 0;
+  int16_t GroupId_         = -1;
+  int16_t SourceId_        = -1;
+  int16_t RegionId_        = -1;
+  int32_t RegionOffsetX_   = -1;
+  int32_t RegionOffsetY_   = -1;
+  int64_t Timestamp_       = -1;
+  int64_t TypeId_          = -1;
+  int32_t Format_          = -1;
   const int16_t Reserved2_ = 0;
-  int16_t PartCount_;
+  int16_t PartCount_       = 0;
   std::vector<int64_t> PartOffset_;
 };
 
