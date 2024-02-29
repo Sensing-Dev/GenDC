@@ -1,10 +1,14 @@
 
 gendcparse_src = [
-  'gstgendcparse.c'
+  'gstgendcparse.c',
+  'gstpartparse.c',
+  'gstcomponentparse.c',
 ]
 
 gendcparse_headers = [
-  'gstgendcparse.h'
+  'gstgendcparse.h',
+  'gstpartparse.h',
+  'gstcomponentparse.h',
 ]
 
 # gendc_dep = declare_dependency(link_with : gendc,

@@ -44,23 +44,23 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __GST_GENDCPARSE_H__
-#define __GST_GENDCPARSE_H__
+#ifndef __GST_PARTPARSE_H__
+#define __GST_PARTPARSE_H__
 
 #include <gst/gst.h>
 
 G_BEGIN_DECLS
 
 /* Standard macros for defining types for this element.  */
-#define GST_TYPE_GENDCPARSE \
+#define GST_TYPE_PARTPARSE \
   (gst_gendcparse_get_type())
 
-G_DECLARE_FINAL_TYPE(GstGenDCParse, gst_gendcparse, GST, GENDCPARSE, GstElement)
+G_DECLARE_FINAL_TYPE(GstGenDCParse, gst_gendcparse, GST, PARTPARSE, GstElement)
 
 typedef enum {
-  GST_GENDCPARSE_START,
-  GST_GENDCPARSE_HEADER,
-  GST_GENDCPARSE_DATA
+  GST_PARTPARSE_START,
+  GST_PARTPARSE_HEADER,
+  GST_PARTPARSE_DATA
 } GstGenDCParseState;
 
 
@@ -99,4 +99,4 @@ struct _GstGenDCParse {
 GST_ELEMENT_REGISTER_DECLARE(gendc_parse)
 G_END_DECLS
 
-#endif /* __GST_GENDCPARSE_H__ */
+#endif /* __GST_PARTPARSE_H__ */

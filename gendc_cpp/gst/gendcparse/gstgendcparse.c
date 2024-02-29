@@ -87,7 +87,7 @@ static GstStaticPadTemplate src_data_factory = GST_STATIC_PAD_TEMPLATE("src_data
 #define gst_gendcparse_parent_class parent_class
 G_DEFINE_TYPE(GstGenDCParse, gst_gendcparse, GST_TYPE_ELEMENT);
 
-GST_ELEMENT_REGISTER_DEFINE(gendcparse, "gendc-parse", GST_RANK_NONE, GST_TYPE_GENDCPARSE);
+GST_ELEMENT_REGISTER_DEFINE(gendcparse, "gendc-parse", GST_RANK_NONE, GST_TYPE_PARTPARSE);
 
 /* initialize the gendcparse's class */
 static void
@@ -118,19 +118,19 @@ gst_gendcparse_class_init(GstGenDCParseClass* klass) {
                                         "your name <your.name@your.isp>");
 }
 
-GstCaps* gst_genparse_create_component_caps() {
-  GstCaps* component_caps = gst_caps_new_simple("application/x-gst-component",
-                                                "header", G_TYPE_POINTER, 0,
-                                                "data", G_TYPE_POINTER, 0,
-                                                "data-size", G_TYPE_UINT64, 0,
-                                                "header-size", G_TYPE_UINT64, 0,
-                                                NULL);
-  return component_caps;
-}
+// GstCaps* gst_genparse_create_component_caps() {
+//   GstCaps* component_caps = gst_caps_new_simple("application/x-gst-component",
+//                                                 "header", G_TYPE_POINTER, 0,
+//                                                 "data", G_TYPE_POINTER, 0,
+//                                                 "data-size", G_TYPE_UINT64, 0,
+//                                                 "header-size", G_TYPE_UINT64, 0,
+//                                                 NULL);
+//   return component_caps;
+// }
 
 static void
 gst_gendcparse_reset(GstGenDCParse* gendc) {
-  gendc->state = GST_GENDCPARSE_START;
+  gendc->state = GST_PARTPARSE_START;
   gendc->container_header = NULL;
   gendc->container_header_size = 0;
 
@@ -140,7 +140,7 @@ gst_gendcparse_reset(GstGenDCParse* gendc) {
 
 static void
 gst_gendcparse_dispose(GObject* object) {
-  GstGenDCParse* gendc = GST_GENDCPARSE(object);
+  GstGenDCParse* gendc = GST_PARTPARSE(object);
 
   GST_DEBUG_OBJECT(gendc, "GenDC: Dispose");
   gst_gendcparse_reset(gendc);
@@ -158,7 +158,7 @@ gboolean gst_gendcparse_sink_activate_mode(GstPad* sinkpad, GstObject* parent, G
 gboolean gst_gendcparse_sink_event(GstPad* pad, GstObject* parent, GstEvent* event) {
   GstGenDCParse* gendcparse;
   gboolean ret = FALSE;
-  gendcparse   = GST_GENDCPARSE(parent);
+  gendcparse   = GST_PARTPARSE(parent);
 
   GST_LOG_OBJECT(gendcparse, "Received %s event: %" GST_PTR_FORMAT,
                  GST_EVENT_TYPE_NAME(event), event);
@@ -286,8 +286,8 @@ gst_gendcparse_set_property(GObject* object, guint prop_id,
                             const GValue* value, GParamSpec* pspec) {
   GstGenDCParse* self;
 
-  g_return_if_fail(GST_IS_GENDCPARSE(object));
-  self = GST_GENDCPARSE(object);
+  g_return_if_fail(GST_IS_PARTPARSE(object));
+  self = GST_PARTPARSE(object);
 
   switch (prop_id) {
     case PROP_0:
@@ -303,8 +303,8 @@ gst_gendcparse_get_property(GObject* object, guint prop_id,
                             GValue* value, GParamSpec* pspec) {
   GstGenDCParse* self;
 
-  g_return_if_fail(GST_IS_GENDCPARSE(object));
-  self = GST_GENDCPARSE(object);
+  g_return_if_fail(GST_IS_PARTPARSE(object));
+  self = GST_PARTPARSE(object);
 
   switch (prop_id) {
     case PROP_0:
@@ -332,7 +332,7 @@ static GstFlowReturn
 gst_gendcparse_chain(GstPad* pad, GstObject* parent, GstBuffer* buf) {
   GstGenDCParse* gendcparse;
 
-  gendcparse = GST_GENDCPARSE(parent);
+  gendcparse = GST_PARTPARSE(parent);
 
   guint min_valid_components = 1;
   guint min_size             = 56 + 8 * min_valid_components; // ToDO
