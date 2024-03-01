@@ -1,0 +1,6 @@
+ion-python
+opencv-python
+numpy
+meson
+conan
+ninja
