@@ -1,7 +1,7 @@
 
 valgrind_dep = dependency('valgrind', required: false).partial_dependency(compile_args : true)
 if valgrind_dep.found()
-  cdata.set('HAVE_VALGRIND', 1)
+  #cdata.set('HAVE_VALGRIND', 1)
 endif
 
 tests = [
