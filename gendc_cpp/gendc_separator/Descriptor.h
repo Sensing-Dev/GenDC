@@ -6,6 +6,7 @@
 #include <map>
 #include <tuple>
 #include <vector>
+#include <cstring>
 
 #define GENDC_SIGNATURE 0x43444E47
 
@@ -125,7 +126,7 @@ class Header {
     int total_size = 0;
     if (container.size() > 0) {
       std::string key = container_name;
-      for (int i = 0; i < container.size(); ++i) {
+      for (size_t i = 0; i < container.size(); ++i) {
         total_size += DisplayItemInfo(i > 0 ? "" : key, container.at(i), level, hex);
       }
     } else {
@@ -140,7 +141,7 @@ class Header {
     int total_size = 0;
     if (container.size() > 0) {
       std::string key = container_name;
-      for (int i = 0; i < container.size(); ++i) {
+      for (size_t i = 0; i < container.size(); ++i) {
         total_size += DisplayItemInfo(i > 0 ? "" : key, container.at(i), level, hex);
       }
     } else {

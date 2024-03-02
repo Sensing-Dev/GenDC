@@ -32,7 +32,6 @@ class PartHeader : public Header {
   PartHeader() {}
   // constructor with existing header info
   PartHeader(char* header_info, size_t offset = 0) {
-    size_t total_size = 0;
     offset += Read(header_info, offset, HeaderType_);
     offset += Read(header_info, offset, Flags_);
     offset += Read(header_info, offset, HeaderSize_);
@@ -157,7 +156,7 @@ class PartHeader : public Header {
     offset += Write(ptr, offset, InfoReserved_);
     offset += WriteContainer(ptr, offset, TypeSpecific_);
 
-    if ((offset - cpy_offset) != HeaderSize_) {
+    if (static_cast<int32_t>(offset - cpy_offset) != HeaderSize_) {
       std::cerr << "Part header size is wrong" << HeaderSize_ << " != " << offset - cpy_offset << std::endl;
     }
     return offset;
