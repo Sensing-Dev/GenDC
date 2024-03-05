@@ -17,7 +17,7 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * FITNESS FOR A GENDCICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
@@ -35,7 +35,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR A GENDCICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
@@ -44,23 +44,23 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __GST_PARTPARSE_H__
-#define __GST_PARTPARSE_H__
+#ifndef __GST_GENDCPARSE_H__
+#define __GST_GENDCPARSE_H__
 
 #include <gst/gst.h>
 
 G_BEGIN_DECLS
 
 /* Standard macros for defining types for this element.  */
-#define GST_TYPE_PARTPARSE \
+#define GST_TYPE_GENDCPARSE \
   (gst_gendcparse_get_type())
 
-G_DECLARE_FINAL_TYPE(GstGenDCParse, gst_gendcparse, GST, PARTPARSE, GstElement)
+G_DECLARE_FINAL_TYPE(GstGenDCParse, gst_gendcparse, GST, GENDCPARSE, GstElement)
 
 typedef enum {
-  GST_PARTPARSE_START,
-  GST_PARTPARSE_HEADER,
-  GST_PARTPARSE_DATA
+  GST_GENDCPARSE_START,
+  GST_GENDCPARSE_HEADER,
+  GST_GENDCPARSE_DATA
 } GstGenDCParseState;
 
 
@@ -99,4 +99,4 @@ struct _GstGenDCParse {
 GST_ELEMENT_REGISTER_DECLARE(gendc_parse)
 G_END_DECLS
 
-#endif /* __GST_PARTPARSE_H__ */
+#endif /* __GST_GENDCPARSE_H__ */
