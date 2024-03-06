@@ -18,7 +18,7 @@ class ContainerHeader : public Header {
       std::cerr << "This ptr does NOT hace GenDC Signature" << std::endl;
     }
 
-    for (int i = 0; i < Version_.size(); i++) {
+    for (size_t i = 0; i < Version_.size(); i++) {
       int8_t v;
       offset += Read(descriptor, offset, v);
       Version_.at(i) = v;
@@ -90,7 +90,7 @@ class ContainerHeader : public Header {
       offset = ch.GenerateDescriptor(ptr, offset);
     }
 
-    if (offset != DescriptorSize_) {
+    if (static_cast<int32_t>(offset) != DescriptorSize_) {
       std::cerr << "Descriptor size is wrong" << DescriptorSize_ << " != " << offset << std::endl;
     }
     return offset;
@@ -175,7 +175,7 @@ class ContainerHeader : public Header {
     offset += Write(ptr, offset, ComponentCount_);
     offset += WriteContainer(ptr, offset, ComponentOffset_);
 
-    if (offset != HeaderSize_) {
+    if (static_cast<int32_t>(offset) != HeaderSize_) {
       std::cerr << "Container header size is wrong" << HeaderSize_ << " != " << offset << std::endl;
     }
     return offset;

@@ -164,7 +164,7 @@ class ComponentHeader : public Header {
 
     offset += WriteContainer(ptr, offset, PartOffset_);
 
-    if ((offset - cpy_offset) != HeaderSize_) {
+    if (static_cast<int32_t>(offset - cpy_offset) != HeaderSize_) {
       std::cerr << "Component header size is wrong" << HeaderSize_ << " != " << offset - cpy_offset << std::endl;
     }
     return offset;

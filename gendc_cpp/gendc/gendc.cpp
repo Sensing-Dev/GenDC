@@ -56,7 +56,6 @@ bool is_component_format(char* buf) {
   return component_header.isValidHeaderType();
 }
 bool is_valid_component(char* buf) {
-  bool rc = true;
   ComponentHeader component_header(buf);
   return component_header.isValid();
 }
@@ -83,13 +82,11 @@ void destroy_component_header(void* header) {
 }
 
 bool is_part_format(char* buf) {
-  bool rc = true;
   PartHeader part_header(buf);
   // TODO
   return part_header.isValidHeaderType();
 }
 bool is_part_component(char* buf) {
-  bool rc = true;
   // TODO
   PartHeader part_header(buf);
   return part_header.isValid();

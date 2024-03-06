@@ -3,7 +3,7 @@
 
 #include <sstream>
 #include <string>
-
+#include <cstring>
 #include "Descriptor.h"
 
 // *****************************************************************************
@@ -13,7 +13,8 @@
 
 bool isGenDC(char* buf) {
   int32_t signature;
-  std::memcpy(&signature, buf + SIGNATURE_OFFSET, sizeof(int32_t));
+  // std::memcpy(&signature, buf + SIGNATURE_OFFSET, sizeof(int32_t));
+  memcpy(&signature, buf + SIGNATURE_OFFSET, sizeof(int32_t));
 
   if (signature != GENDC_SIGNATURE) {
     std::cout << "[LOG ion-kit(gendc-separator)] The data is not genDC format" << std::endl;
@@ -24,7 +25,7 @@ bool isGenDC(char* buf) {
 
 std::array<int8_t, 3> getGenDCVersion(char* buf) {
   std::array<int8_t, 3> version;
-  for (int i = 0; i < version.size(); ++i) {
+  for (size_t i = 0; i < version.size(); ++i) {
     std::memcpy(&version.at(i), buf + VERSION_OFFSET + sizeof(int8_t) * i, sizeof(int8_t));
   }
   return version;
