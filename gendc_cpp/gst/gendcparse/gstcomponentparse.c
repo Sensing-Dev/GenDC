@@ -29,7 +29,6 @@ static void gst_componentparse_dispose(GObject* object);
 // Sink events
 static gboolean gst_componentparse_sink_activate(GstPad* sinkpad, GstObject* parent);
 static gboolean gst_componentparse_sink_activate_mode(GstPad* sinkpad, GstObject* parent, GstPadMode mode, gboolean active);
-static gboolean gst_componentparse_sink_event(GstPad* pad, GstObject* parent, GstEvent* event);
 
 static gboolean gst_componentparse_send_event(GstElement* element, GstEvent* event);
 static GstStateChangeReturn gst_componentparse_change_state(GstElement* element, GstStateChange transition);
@@ -53,24 +52,28 @@ enum {
 enum {
   PROP_0
 };
-//
-//static GstStaticPadTemplate sink_factory = GST_STATIC_PAD_TEMPLATE("sink",
-//                                                                   GST_PAD_SINK,
-//                                                                   GST_PAD_ALWAYS,
-//                                                                   GST_STATIC_CAPS("ANY") // TODO
-//);
-static GstStaticPadTemplate sink_factory = GST_STATIC_PAD_TEMPLATE("sink",
+//TODO : create cap for component headers and component data
+// GstCaps* gst_genparse_create_part_caps() {
+//   GstCaps* part_caps = gst_caps_new_simple("application/x-gendc-part",
+//                                                 "header", G_TYPE_POINTER, 0,
+//                                                 "data", G_TYPE_POINTER, 0,
+//                                                 "data-size", G_TYPE_UINT64, 0,
+//                                                 "header-size", G_TYPE_UINT64, 0,
+//                                                 NULL);
+//   return part_caps;
+// }
+
+static GstStaticPadTemplate sink_descriptor_factory = GST_STATIC_PAD_TEMPLATE("sink_header",
                                                                    GST_PAD_SINK,
                                                                    GST_PAD_ALWAYS,
-                                                                   GST_STATIC_CAPS("video/x-raw") // TODO
+                                                                   GST_STATIC_CAPS("ANY") // TODO
 );
-
-static GstStaticPadTemplate src_factory = GST_STATIC_PAD_TEMPLATE("src",
-                                                                  GST_PAD_SRC,
-                                                                  GST_PAD_ALWAYS,
-                                                                  GST_STATIC_CAPS("ANY") // TODO
+static GstStaticPadTemplate sink_data_factory = GST_STATIC_PAD_TEMPLATE("sink_data",
+                                                                   GST_PAD_SINK,
+                                                                   GST_PAD_ALWAYS,
+                                                                   GST_STATIC_CAPS("ANY") // TODO
 );
-static GstStaticPadTemplate src_descriptor_factory = GST_STATIC_PAD_TEMPLATE("src_header",
+static GstStaticPadTemplate src_header_factory = GST_STATIC_PAD_TEMPLATE("src_header",
                                                                   GST_PAD_SRC,
                                                                   GST_PAD_ALWAYS,
                                                                   GST_STATIC_CAPS("ANY") // TODO
@@ -82,7 +85,7 @@ static GstStaticPadTemplate src_data_factory = GST_STATIC_PAD_TEMPLATE("src_data
 );
 
 #define DEBUG_INIT \
-  GST_DEBUG_CATEGORY_INIT(componentparse_debug, "componentparse", 0, "Component data parser");
+  GST_DEBUG_CATEGORY_INIT(componentparse_debug, "componentparse", 0, "Gendc Component data parser");
 
 #define gst_componentparse_parent_class parent_class
 G_DEFINE_TYPE(GstComponentParse, gst_componentparse, GST_TYPE_ELEMENT);
@@ -108,8 +111,10 @@ gst_componentparse_class_init(GstComponentParseClass* klass) {
   gstelement_class->change_state = gst_componentparse_change_state;
   gstelement_class->send_event   = gst_componentparse_send_event;
 
-  gst_element_class_add_pad_template(gstelement_class, gst_static_pad_template_get(&src_factory));
-  gst_element_class_add_pad_template(gstelement_class, gst_static_pad_template_get(&sink_factory));
+  gst_element_class_add_pad_template(gstelement_class, gst_static_pad_template_get(&src_header_factory));
+  gst_element_class_add_pad_template(gstelement_class, gst_static_pad_template_get(&src_data_factory));
+  gst_element_class_add_pad_template(gstelement_class, gst_static_pad_template_get(&sink_descriptor_factory));
+  gst_element_class_add_pad_template(gstelement_class, gst_static_pad_template_get(&sink_data_factory));
 
   gst_element_class_set_static_metadata(gstelement_class,
                                         "Component data Parser",
@@ -118,18 +123,9 @@ gst_componentparse_class_init(GstComponentParseClass* klass) {
                                         "your name <your.name@your.isp>");
 }
 
-GstCaps* gst_genparse_create_part_caps() {
-  GstCaps* part_caps = gst_caps_new_simple("application/x-gendc-part",
-                                                "header", G_TYPE_POINTER, 0,
-                                                "data", G_TYPE_POINTER, 0,
-                                                "data-size", G_TYPE_UINT64, 0,
-                                                "header-size", G_TYPE_UINT64, 0,
-                                                NULL);
-  return part_caps;
-}
 
 static void
-gst_componentparse_reset(GstComponentParse* component) {
+gst_componentparse_reset(GstComponentParse* component) { // TODO
   component->state = GST_COMPONENTPARSE_START;
   component->container_header = NULL;
   component->container_header_size = 0;
@@ -139,7 +135,7 @@ gst_componentparse_reset(GstComponentParse* component) {
 }
 
 static void
-gst_componentparse_dispose(GObject* object) {
+gst_componentparse_dispose(GObject* object) { // TODO
   GstComponentParse* component = GST_COMPONENTPARSE(object);
 
   GST_DEBUG_OBJECT(component, "Component: Dispose");
@@ -147,15 +143,15 @@ gst_componentparse_dispose(GObject* object) {
 
   G_OBJECT_CLASS(parent_class)->dispose(object);
 }
-static gboolean gst_componentparse_pad_query(GstPad* pad, GstObject* parent, GstQuery* query) {
+static gboolean gst_componentparse_pad_query(GstPad* pad, GstObject* parent, GstQuery* query) {  // TODO
   gboolean ret = FALSE;
   return ret;
 }
-gboolean gst_componentparse_sink_activate_mode(GstPad* sinkpad, GstObject* parent, GstPadMode mode, gboolean active) {
+gboolean gst_componentparse_sink_activate_mode(GstPad* sinkpad, GstObject* parent, GstPadMode mode, gboolean active) {  // TODO
   gboolean ret = FALSE;
   return ret;
 }
-gboolean gst_componentparse_sink_event(GstPad* pad, GstObject* parent, GstEvent* event) {
+gboolean gst_componentparse_sink_event(GstPad* pad, GstObject* parent, GstEvent* event) {  // TODO
   GstComponentParse* componentparse;
   gboolean ret = FALSE;
   componentparse   = GST_COMPONENTPARSE(parent);
@@ -181,33 +177,39 @@ gboolean gst_componentparse_sink_event(GstPad* pad, GstObject* parent, GstEvent*
   return ret;
 }
 static gboolean
-gst_componentparse_send_event(GstElement* element, GstEvent* event) {
+gst_componentparse_send_event(GstElement* element, GstEvent* event) {  // TODO
   gboolean ret = FALSE;
   return ret;
 }
 static gboolean
-gst_componentparse_srcpad_event(GstPad* pad, GstObject* parent, GstEvent* event) {
+gst_componentparse_srcpad_event(GstPad* pad, GstObject* parent, GstEvent* event) {  // TODO
   gboolean ret = FALSE;
 
   return ret;
 }
 static GstStateChangeReturn
-gst_componentparse_change_state(GstElement* element, GstStateChange transition) {
+gst_componentparse_change_state(GstElement* element, GstStateChange transition) {  // TODO
   GstStateChangeReturn ret = GST_STATE_CHANGE_SUCCESS;
   return ret;
 }
 
 static void
 gst_componentparse_init(GstComponentParse* componentparse) {
-  componentparse->sinkpad = gst_pad_new_from_static_template(&sink_factory, "sink");
-  // gst_pad_set_activate_function(componentparse->sinkpad, GST_DEBUG_FUNCPTR(gst_componentparse_sink_activate));
-  // gst_pad_set_activatemode_function(componentparse->sinkpad, GST_DEBUG_FUNCPTR(gst_componentparse_sink_activate_mode));
-  gst_pad_set_chain_function(componentparse->sinkpad, GST_DEBUG_FUNCPTR(gst_componentparse_chain));
-  gst_pad_set_event_function(componentparse->sinkpad, GST_DEBUG_FUNCPTR(gst_componentparse_sink_event));
-  GST_PAD_SET_PROXY_CAPS(componentparse->sinkpad);
-  gst_element_add_pad(GST_ELEMENT(componentparse), componentparse->sinkpad);
+  componentparse->sink_descriptor_pad = gst_pad_new_from_static_template(&sink_descriptor_factory, "sink_header");
+  // gst_pad_set_activate_function(componentparse->sink_descriptor_pad, GST_DEBUG_FUNCPTR(gst_componentparse_sink_activate));
+  // gst_pad_set_activatemode_function(componentparse->sink_descriptor_pad, GST_DEBUG_FUNCPTR(gst_componentparse_sink_activate_mode));
+  gst_pad_set_chain_function(componentparse->sink_descriptor_pad, GST_DEBUG_FUNCPTR(gst_componentparse_chain));
+  gst_pad_set_event_function(componentparse->sink_descriptor_pad, GST_DEBUG_FUNCPTR(gst_componentparse_sink_event));
+  GST_PAD_SET_PROXY_CAPS(componentparse->sink_descriptor_pad);
+  gst_element_add_pad(GST_ELEMENT(componentparse), componentparse->sink_descriptor_pad);
 
-  componentparse->srcpad = gst_pad_new_from_template(gst_element_class_get_pad_template(GST_ELEMENT_GET_CLASS(componentparse), "src"), "src");
+  componentparse->sink_data_pad = gst_pad_new_from_static_template(&sink_data_factory, "sink_data");
+  gst_pad_set_chain_function(componentparse->sink_data_pad, GST_DEBUG_FUNCPTR(gst_componentparse_chain));
+  gst_pad_set_event_function(componentparse->sink_data_pad, GST_DEBUG_FUNCPTR(gst_componentparse_sink_event));
+  GST_PAD_SET_PROXY_CAPS(componentparse->sink_data_pad);
+  gst_element_add_pad(GST_ELEMENT(componentparse), componentparse->sink_data_pad);
+
+
   componentparse->src_header_pad = gst_pad_new_from_template(gst_element_class_get_pad_template(GST_ELEMENT_GET_CLASS(componentparse), "src_header"), "src_header");
   componentparse->src_data_pad = gst_pad_new_from_template(gst_element_class_get_pad_template(GST_ELEMENT_GET_CLASS(componentparse), "src_data"), "src_data");
   
@@ -217,23 +219,14 @@ gst_componentparse_init(GstComponentParse* componentparse) {
   gst_pad_set_event_function(componentparse->src_header_pad, GST_DEBUG_FUNCPTR(gst_componentparse_srcpad_event));
   GST_PAD_SET_PROXY_CAPS(componentparse->src_header_pad);
 
-   gst_pad_use_fixed_caps(componentparse->src_data_pad);
+  gst_pad_use_fixed_caps(componentparse->src_data_pad);
   gst_pad_set_query_function(componentparse->src_data_pad, GST_DEBUG_FUNCPTR(gst_componentparse_pad_query));
-   gst_pad_set_event_function(componentparse->src_data_pad, GST_DEBUG_FUNCPTR(gst_componentparse_srcpad_event));
+  gst_pad_set_event_function(componentparse->src_data_pad, GST_DEBUG_FUNCPTR(gst_componentparse_srcpad_event));
   GST_PAD_SET_PROXY_CAPS(componentparse->src_data_pad);
 
-   gst_pad_use_fixed_caps(componentparse->srcpad);
-  gst_pad_set_query_function(componentparse->srcpad, GST_DEBUG_FUNCPTR(gst_componentparse_pad_query));
-  gst_pad_set_event_function(componentparse->srcpad, GST_DEBUG_FUNCPTR(gst_componentparse_srcpad_event));
-  GST_PAD_SET_PROXY_CAPS(componentparse->srcpad);
-
-  gst_element_add_pad(GST_ELEMENT_CAST(componentparse), componentparse->srcpad);
   gst_element_add_pad(GST_ELEMENT_CAST(componentparse), componentparse->src_header_pad);
   gst_element_add_pad(GST_ELEMENT_CAST(componentparse), componentparse->src_data_pad);
 
-  // componentparse->srcpad = gst_pad_new_from_static_template(&src_factory, "src");
-  // GST_PAD_SET_PROXY_CAPS(componentparse->srcpad);
-  // gst_element_add_pad(GST_ELEMENT(componentparse), componentparse->srcpad);
 }
 
 static gboolean

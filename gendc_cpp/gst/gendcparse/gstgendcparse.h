@@ -69,7 +69,7 @@ struct _GstGenDCParse {
   GstElement element;
   //GstStructure s;
 
-  GstPad *sinkpad, *srcpad;
+  GstPad *sinkpad;
   GstPad *src_header_pad, *src_data_pad;
 
   // Stream
@@ -77,7 +77,7 @@ struct _GstGenDCParse {
 
 
   // descriptor
-  gpointer container_header;
+  gpointer container_header; 
   guint64 container_header_size;
 
   // components

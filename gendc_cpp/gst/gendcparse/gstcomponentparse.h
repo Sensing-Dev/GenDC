@@ -69,7 +69,7 @@ struct _GstComponentParse {
   GstElement element;
   //GstStructure s;
 
-  GstPad *sinkpad, *srcpad;
+  GstPad *sink_descriptor_pad, *sink_data_pad;
   GstPad *src_header_pad, *src_data_pad;
 
   // Stream

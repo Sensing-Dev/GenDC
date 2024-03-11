@@ -24,7 +24,7 @@
 #define SIMPLE_GENDC_PATH GST_TEST_FILES_PATH G_DIR_SEPARATOR_S "gendc"
 
 static GstElement *
-create_pipeline (GstPadMode mode)
+create_pipeline (GstPadMode mode, gchar * path)
 {
   GstElement *pipeline;
   GstElement *src, *q = NULL;
@@ -43,7 +43,8 @@ create_pipeline (GstPadMode mode)
 
   gst_bin_add_many (GST_BIN (pipeline), src, gendcparse, fakesink, q, NULL);
 
-  g_object_set (src, "location", SIMPLE_GENDC_PATH, NULL);
+  g_object_set (src, "location", path, NULL);
+  // g_object_set (src, "location", SIMPLE_GENDC_PATH, NULL);
 
   if (mode == GST_PAD_MODE_PUSH)
     fail_unless (gst_element_link_many (src, q, gendcparse, fakesink, NULL));
@@ -60,7 +61,7 @@ do_test_simple_file (GstPadMode mode)
   GstElement *pipeline;
   GstMessage *msg;
 
-  pipeline = create_pipeline (mode);
+  pipeline = create_pipeline (mode, SIMPLE_GENDC_PATH);
 
   ret = gst_element_set_state (pipeline, GST_STATE_PLAYING);
   fail_unless_equals_int (ret, GST_STATE_CHANGE_ASYNC);
@@ -156,7 +157,39 @@ fakesink_buffer_cb (GstPad * sink, GstPadProbeInfo * info, gpointer user_data)
   return GST_PAD_PROBE_OK;
 }
 
+gst_opencv_test(){
+  import cv2
 
+# Define a GStreamer pipeline using v4l2src as the video source
+# This example captures video from the default video device (/dev/video0)
+# Modify the device path if your camera is on a different device
+gst_pipeline = 'v4l2src device=/dev/video0 ! decodebin ! videoconvert ! appsink'
+
+# Open video capture with the defined GStreamer pipeline
+cap = cv2.VideoCapture(gst_pipeline, cv2.CAP_GSTREAMER)
+
+if not cap.isOpened():
+    print("Failed to open video capture")
+    exit()
+
+# Read and display video frames in a loop
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        print("Failed to read frame")
+        break
+
+    # Display the frame
+    cv2.imshow('Frame', frame)
+
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+# Release the video capture object and close windows
+cap.release()
+cv2.destroyAllWindows()
+
+}
 static Suite *
 gendcparse_suite (void)
 {
@@ -172,3 +205,5 @@ gendcparse_suite (void)
 }
 
 GST_CHECK_MAIN (gendcparse)
+
+
