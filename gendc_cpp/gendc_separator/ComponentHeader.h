@@ -116,7 +116,9 @@ class ComponentHeader : public Header {
   int32_t getOffsetFromTypeSpecific(int32_t jth_part, int32_t kth_typespecific, int32_t typespecific_offset = 0) const {
     return PartOffset_.at(jth_part) + partheader_.at(jth_part).getOffsetFromTypeSpecific(kth_typespecific, typespecific_offset);
   }
-
+  int16_t getPartCount(){
+    return PartCount_
+  }
   void DisplayHeaderInfo() const {
     int total_size = 0;
     std::cout << "\nCOMPONENT HEADER" << std::endl;

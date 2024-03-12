@@ -17,14 +17,17 @@ void get_gendc_version(char* buf, int8_t version[3]);
 void* create_container_descriptor(char* buf);
 int32_t get_descriptor_size(void* container_header);
 int64_t get_data_size(void* container_header);
+int64_t get_component_count(void* container_header);
+void* get_component_header(void* container_header, int64_t component_index);
 void destroy_container_descriptor(void* header);
 
 bool is_component_format(char* buf);
 bool is_valid_component(char* buf);
 
-void* create_component_header(char* buf);
 int32_t get_component_header_size(void* component_header);
+int64_t get_component_data_offset(void* component_header);
 int64_t get_component_data_size(void* component_header);
+int64_t get_part_count(void* component_header);
 void destroy_component_header(void* header);
 
 

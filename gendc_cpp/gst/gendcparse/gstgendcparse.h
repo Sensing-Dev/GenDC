@@ -70,26 +70,21 @@ struct _GstGenDCParse {
   //GstStructure s;
 
   GstPad *sinkpad;
-  GstPad *src_header_pad, *src_data_pad;
+  GstPad *src_descriptor_pad;
+  GList  *src_component_pad;
 
   // Stream
   GstGenDCParseState state;
 
 
   // descriptor
-  gpointer container_header; 
-  guint64 container_header_size;
+  gpointer container_descriptor; 
+  guint64 container_descriptor_size;
+  guint64 container_data_size;
 
   // components
   guint64 component_count;
-  GPtrArray *components;
-
-  //component
-  gpointer header;
-  gpointer data;
-  guint64 data_size;
-  guint64 header_size;
-  guint64 part_count;
+  GList *components;
 
 };
 
