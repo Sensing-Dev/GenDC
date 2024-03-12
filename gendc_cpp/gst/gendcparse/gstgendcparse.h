@@ -63,29 +63,25 @@ typedef enum {
   GST_GENDCPARSE_DATA
 } GstGenDCParseState;
 
-
-
 struct _GstGenDCParse {
   GstElement element;
-  //GstStructure s;
+  // GstStructure s;
 
   GstPad *sinkpad;
   GstPad *src_descriptor_pad;
-  GList  *src_component_pad;
+  GList *src_component_pad;
 
   // Stream
   GstGenDCParseState state;
 
-
   // descriptor
-  gpointer container_descriptor; 
+  gpointer container_descriptor;
   guint64 container_descriptor_size;
   guint64 container_data_size;
 
   // components
   guint64 component_count;
   GList *components;
-
 };
 
 /* Standard function returning type information. */

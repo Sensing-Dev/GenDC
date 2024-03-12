@@ -157,39 +157,7 @@ fakesink_buffer_cb (GstPad * sink, GstPadProbeInfo * info, gpointer user_data)
   return GST_PAD_PROBE_OK;
 }
 
-gst_opencv_test(){
-  import cv2
 
-# Define a GStreamer pipeline using v4l2src as the video source
-# This example captures video from the default video device (/dev/video0)
-# Modify the device path if your camera is on a different device
-gst_pipeline = 'v4l2src device=/dev/video0 ! decodebin ! videoconvert ! appsink'
-
-# Open video capture with the defined GStreamer pipeline
-cap = cv2.VideoCapture(gst_pipeline, cv2.CAP_GSTREAMER)
-
-if not cap.isOpened():
-    print("Failed to open video capture")
-    exit()
-
-# Read and display video frames in a loop
-while True:
-    ret, frame = cap.read()
-    if not ret:
-        print("Failed to read frame")
-        break
-
-    # Display the frame
-    cv2.imshow('Frame', frame)
-
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-
-# Release the video capture object and close windows
-cap.release()
-cv2.destroyAllWindows()
-
-}
 static Suite *
 gendcparse_suite (void)
 {

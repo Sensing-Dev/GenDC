@@ -43,16 +43,16 @@ int64_t get_data_size(void* header) {
   return container_header->getDataSize();
 }
 
-int64_t get_component_count(void* container_header){
+int64_t get_component_count(void* header) {
   ContainerHeader* container_header = reinterpret_cast<ContainerHeader*>(header);
   return container_header->getComponentCount();
 }
-void* get_component_header(void* container_header, int64_t component_index){
-   ContainerHeader* container_header = reinterpret_cast<ContainerHeader*>(header);
-   ContainerHeader* component_header = NULL;
-   if(!container_header && container_header->getComponentCount() > component_index){
-    component_header = new ContainerHeader(container_header->getComponentHeaders().at(component_index));
-   }
+void* get_component_header(void* header, int64_t component_index) {
+  ContainerHeader* container_header = reinterpret_cast<ContainerHeader*>(header);
+  ComponentHeader* component_header = NULL;
+  if (!container_header && container_header->getComponentCount() > component_index) {
+    component_header = new ComponentHeader(container_header->getComponentHeaders().at(component_index));
+  }
   return component_header;
 }
 void destroy_container_descriptor(void* header) {
@@ -61,34 +61,35 @@ void destroy_container_descriptor(void* header) {
   header = nullptr;
 }
 
-
-bool is_component_format(char* buf) {
-  ComponentHeader component_header(buf);
-  return component_header.isValidHeaderType();
+bool is_component_format(void* header) {
+  ComponentHeader* component_header = reinterpret_cast<ComponentHeader*>(header);
+  if (!component_header) return 0;
+  return component_header->isValidHeaderType();
 }
-bool is_valid_component(char* buf) {
-  ComponentHeader component_header(buf);
-  return component_header.isValid();
+bool is_valid_component(void* header) {
+  ComponentHeader* component_header = reinterpret_cast<ComponentHeader*>(header);
+  if (!component_header) return 0;
+  return component_header->isValid();
 }
 
 int32_t get_component_header_size(void* header) {
   if (!header) return 0;
-  ComponentHeader* ComponentHeader = reinterpret_cast<ComponentHeader*>(header);
-  return ComponentHeader->getHeaderSize();
+  ComponentHeader* component_header = reinterpret_cast<ComponentHeader*>(header);
+  return component_header->getHeaderSize();
 }
-int64_t get_component_data_offset(void* component_header){  
-  ComponentHeader* ComponentHeader = reinterpret_cast<ComponentHeader*>(header);
-  if (!ComponentHeader) return 0;
-  ComponentHeader->getDataOffset(0);
+int64_t get_component_data_offset(void* header) {
+  ComponentHeader* component_header = reinterpret_cast<ComponentHeader*>(header);
+  if (!component_header) return 0;
+  return component_header->getDataOffset(0);
 }
 
 int64_t get_component_data_size(void* header) {
   if (!header) return 0;
-  ComponentHeader* ComponentHeader = reinterpret_cast<ComponentHeader*>(header);
-  return ComponentHeader->getDataSize();
+  ComponentHeader* component_header = reinterpret_cast<ComponentHeader*>(header);
+  return component_header->getDataSize();
 }
 
-int64_t get_part_count(void* header){
+int64_t get_part_count(void* header) {
   ComponentHeader* component_header = reinterpret_cast<ComponentHeader*>(header);
   return component_header->getPartCount();
 }
@@ -127,7 +128,6 @@ void destroy_part_header(void* header) {
   PartHeader* component_header = reinterpret_cast<PartHeader*>(header);
   delete component_header;
   header = nullptr;
-
 }
 
 } // extern "C"

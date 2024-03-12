@@ -21,8 +21,8 @@ int64_t get_component_count(void* container_header);
 void* get_component_header(void* container_header, int64_t component_index);
 void destroy_container_descriptor(void* header);
 
-bool is_component_format(char* buf);
-bool is_valid_component(char* buf);
+bool is_component_format(void* buf);
+bool is_valid_component(void* buf);
 
 int32_t get_component_header_size(void* component_header);
 int64_t get_component_data_offset(void* component_header);

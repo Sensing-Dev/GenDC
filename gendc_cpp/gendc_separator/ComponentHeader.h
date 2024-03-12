@@ -117,7 +117,7 @@ class ComponentHeader : public Header {
     return PartOffset_.at(jth_part) + partheader_.at(jth_part).getOffsetFromTypeSpecific(kth_typespecific, typespecific_offset);
   }
   int16_t getPartCount(){
-    return PartCount_
+    return PartCount_;
   }
   void DisplayHeaderInfo() const {
     int total_size = 0;
