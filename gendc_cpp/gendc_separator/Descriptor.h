@@ -1,5 +1,6 @@
 #ifndef DESCRIPTOR_H
 #define DESCRIPTOR_H
+#include <cstring>
 #include <iostream>
 #include <vector>
 
