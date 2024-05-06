@@ -113,7 +113,7 @@ public:
         return component_header_.at(ith_component).getDataOffset(jth_part);
     }
 
-    int64_t getDataSize(){
+    int64_t getContainerDataSize(){
         return DataSize_;
     }
 
