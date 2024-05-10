@@ -33,6 +33,8 @@ public:
     // constructor with existing header info
     PartHeader(char* header_info, size_t offset = 0){
 
+        this_partheaders_offset_ = offset;
+
         size_t total_size = 0;
         offset += Read(header_info, offset, HeaderType_);
         offset += Read(header_info, offset, Flags_);
@@ -45,20 +47,20 @@ public:
         offset += Read(header_info, offset, DataOffset_);
 
         // get number of typespecific fields from HeaderSize_
-        int num_typespecific = getNumTypeSpecific(HeaderSize_);
+        num_typespecific_ = getNumTypeSpecific(HeaderSize_);
 
-        if (num_typespecific > 0){
+        if (num_typespecific_ > 0){
             offset += Read(header_info, offset, Dimension_[0]);
             offset += Read(header_info, offset, Dimension_[1]);
         }
-        if (num_typespecific > 1){
+        if (num_typespecific_ > 1){
             offset += Read(header_info, offset, Padding_[0]);
             offset += Read(header_info, offset, Padding_[1]);
         }
-        if (num_typespecific > 2){
+        if (num_typespecific_ > 2){
             offset += sizeof(InfoReserved_);
             int64_t typespecific_item;
-            for (int i = 0; i < num_typespecific - 2; ++i){
+            for (int i = 0; i < num_typespecific_ - 2; ++i){
                 offset += Read(header_info, offset, typespecific_item);
                 TypeSpecific_.push_back(typespecific_item);
             }         
@@ -99,8 +101,38 @@ public:
         return DataSize_;
     }
 
-    int32_t getOffsetFromTypeSpecific(int32_t kth_typespecific, int32_t typespecific_offset = 0){
-        return offset_for_version[GENDC_V10].at(2) + 8 * (kth_typespecific - 1) + typespecific_offset;
+    int16_t getHeaderType(){
+        return HeaderType_;
+    }
+
+    std::vector<int32_t> getDimension(){
+        std::vector<int32_t> ret;
+
+        if (num_typespecific_ == 0){
+            ret.push_back(-1);
+            return ret;
+        }
+
+        switch(HeaderType_ & 0xFF00){
+            case 0x4000:
+                //metadata
+            case 0x4100:
+                // 1D image
+                ret.push_back(static_cast<int32_t>(TypeSpecific_[0]));
+                return ret;
+            case 0x4200:
+                //2D image
+                ret.push_back(Dimension_[0]);
+                ret.push_back(Dimension_[1]);
+                return ret;
+            default:
+                ret.push_back(-1);
+                return ret;
+        }
+    }
+
+    int32_t getOffsetofTypeSpecific(int32_t kth_typespecific, int32_t typespecific_offset = 0){
+        return 8 * (kth_typespecific - 1) + typespecific_offset;
     }
 
     void DisplayHeaderInfo(){
@@ -165,10 +197,13 @@ private:
     int64_t DataOffset_;
 
     // optional
+    int32_t num_typespecific_;
     std::array<int32_t, 2> Dimension_;
     std::array<int16_t, 2> Padding_;
     const int32_t InfoReserved_ = 0;
     std::vector<int64_t> TypeSpecific_;
+
+    int32_t this_partheaders_offset_ = 0;
 };
 // }
 #endif /*PARTHEADER_H*/

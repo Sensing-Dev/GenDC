@@ -8,6 +8,9 @@ public:
     ComponentHeader(){}
 
     ComponentHeader(char* header_info, size_t offset = 0){
+
+        container_ = header_info;
+ 
         int16_t header_type;
         offset += Read(header_info, offset, header_type);
         if (header_type != HeaderType_){
@@ -90,6 +93,43 @@ public:
         return -1;
     }
 
+    int64_t getTypeId(){
+        return TypeId_;
+    }
+
+    int16_t getSourceId(){
+        return SourceId_;
+    }
+
+    // return size of data
+    int32_t getData(char* dst){
+        int32_t cursor = 0;
+        for (PartHeader &ph : partheader_){
+            int64_t part_data_offset = ph.getDataOffset();
+            int64_t part_data_size = ph.getDataSize();
+            std::memcpy(dst + cursor, container_+part_data_offset, part_data_size);
+            cursor += part_data_size;
+        }
+
+        return cursor;
+    }
+
+    int16_t getPartCount(){
+        return PartCount_;
+    }
+
+    PartHeader getPartHeader(int jth_part_index){
+        return partheader_[jth_part_index];
+    }
+
+    std::vector<std::vector<int32_t>> getDimension(){
+        std::vector<std::vector<int32_t>> ret;
+        for (PartHeader &ph : partheader_){
+            ret.push_back(ph.getDimension());
+        }
+        return ret;
+    }
+
     int64_t getDataOffset(int32_t jth_part){
         return partheader_.at(jth_part).getDataOffset();
     }
@@ -98,8 +138,42 @@ public:
         return partheader_.at(jth_part).getDataSize();
     }
 
-    int32_t getOffsetFromTypeSpecific(int32_t jth_part, int32_t kth_typespecific, int32_t typespecific_offset = 0){
-        return PartOffset_.at(jth_part) + partheader_.at(jth_part).getOffsetFromTypeSpecific(kth_typespecific, typespecific_offset);
+    std::vector<int> getImageDimension(){
+        std::vector<int32_t> ret;
+        int32_t jth_part = 0;
+        for (PartHeader &ph : partheader_){
+
+            if(ph.getHeaderType() != 0x4100 && ph.getHeaderType() != 0x4200){
+                throw std::runtime_error("This component does not have image data.");
+            }
+            
+            if (jth_part == 0){
+                ret = ph.getDimension();
+            }else{
+                if (ret != ph.getDimension()){
+                    throw std::runtime_error("Part dimension does not match");
+                }
+            }
+        } 
+
+        if (getPartCount()==1){
+            return ret;
+        }else{
+            ret.push_back(getPartCount());
+        }
+        return ret;
+    }
+
+    int64_t getDataSize(){
+        int64_t ret = 0;
+        for (PartHeader &ph : partheader_){
+            ret += ph.getDataSize();
+        }
+        return ret;
+    }
+
+    int32_t getOffsetofTypeSpecific(int32_t jth_part, int32_t kth_typespecific, int32_t typespecific_offset = 0){
+        return partheader_.at(jth_part).getOffsetofTypeSpecific(kth_typespecific, typespecific_offset);
     }
 
     void DisplayHeaderInfo(){
@@ -172,6 +246,8 @@ private:
     const int16_t Reserved2_ = 0;
     int16_t PartCount_;
     std::vector<int64_t> PartOffset_;
+
+    char* container_;
 };
 
 
