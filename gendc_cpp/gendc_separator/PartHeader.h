@@ -132,7 +132,7 @@ public:
     }
 
     int32_t getOffsetofTypeSpecific(int32_t kth_typespecific, int32_t typespecific_offset = 0){
-        return 8 * (kth_typespecific - 1) + typespecific_offset;
+        return this_partheaders_offset_ +  DEFAULT_PART_HEADER_SIZE + 8 * (kth_typespecific - 1) + typespecific_offset;
     }
 
     void DisplayHeaderInfo(){
