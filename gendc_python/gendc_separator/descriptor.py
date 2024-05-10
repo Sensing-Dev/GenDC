@@ -141,7 +141,7 @@ class Container:
         return get_value(self.header, "DataSize") + get_value(self.header, "DescriptorSize")
 
     # search component #########################################################
-    def get_first_get_datatype_of(self, target_type):
+    def get_first_component_datatype_of(self, target_type):
         # 1 : intensity
         # 0x0000000000008001 : GDC_METADATA
 
@@ -152,7 +152,7 @@ class Container:
                 
         return -1
 
-    def get_first_get_sourceid_of(self, target_sourceid):
+    def get_first_component_sourceid_of(self, target_sourceid):
         for ith, ch in enumerate(self.component_headers):
             if ch.is_valid():
                 if ch.get("SourceId", -1) == target_sourceid:
