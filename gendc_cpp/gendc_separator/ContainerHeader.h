@@ -9,6 +9,8 @@ public:
     ContainerHeader(){}
 
     ContainerHeader(char* descriptor){
+        container_ = descriptor;
+
         size_t offset = 0;
         int32_t signature;
         int16_t header_type;
@@ -106,6 +108,36 @@ public:
         return std::make_tuple(-1, -1);
     }
 
+    int32_t getFirstComponentIndexWithDatatypeOf(int64_t datatype){
+        int cnt = 0;
+        for (ComponentHeader &ch : component_header_){
+            if (ch.isComponentValid()){
+                if (datatype==ch.getTypeId()){
+                    return cnt;
+                }
+            }
+            ++cnt;
+        }
+        return -1;
+    }
+
+    int32_t getFirstComponentIndexWithSourceIdOf(int16_t source_id){
+        int cnt = 0;
+        for (ComponentHeader &ch : component_header_){
+            if (ch.isComponentValid()){
+                if (source_id==ch.getSourceId()){
+                    return cnt;
+                }
+            }
+            ++cnt;
+        }
+        return -1;
+    }
+
+    ComponentHeader getComponentHeader(int ith_component_index){
+        return component_header_[ith_component_index];
+    }
+
     int64_t getDataOffset(int32_t ith_component = 0, int32_t jth_part = 0){
         if (ith_component == 0 && jth_part == 0){
             return DataOffset_;
@@ -121,10 +153,10 @@ public:
         return component_header_.at(ith_component).getDataSize(jth_part);
     }
 
-    int32_t getOffsetFromTypeSpecific(int32_t ith_component, int32_t jth_part,
+    int32_t getOffsetofTypeSpecific(int32_t ith_component, int32_t jth_part,
         int32_t kth_typespecific, int32_t typespecific_offset = 0){
 
-        return component_header_.at(ith_component).getOffsetFromTypeSpecific(jth_part, kth_typespecific, typespecific_offset);
+        return component_header_.at(ith_component).getOffsetofTypeSpecific(jth_part, kth_typespecific, typespecific_offset);
     }
 
     void DisplayHeaderInfo(){
@@ -192,6 +224,8 @@ private:
     int32_t DescriptorSize_;
     int32_t ComponentCount_;
     std::vector<int64_t> ComponentOffset_;
+
+    char* container_;
 };
 
 #endif /*CONTAINERHEADER_H*/
