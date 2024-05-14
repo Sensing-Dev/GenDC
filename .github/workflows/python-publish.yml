@@ -16,12 +16,11 @@ permissions:
   contents: read
 
 jobs:
-  upload_TEST_PYPI:
-
-    runs-on: ubuntu-latest
-    environment: pypi
-    permissions:
-      id-token: write
+  build_wheels:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+         os: [ubuntu-latest, macos-latest, windows-latest]
 
     steps:
     - uses: actions/checkout@v4
@@ -35,8 +34,65 @@ jobs:
         pip install build
     - name: Build package
       run: python -m build
+    - uses: actions/upload-artifact@v4
+        with:
+          name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
+          path: python/wheelhouse/*.whl
+
+  upload_TEST_PYPI:
+    needs: [build_wheels]
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+
+    steps:
+    - name: DL artifacts
+      uses: actions/download-artifact@v4
+      with: 
+        pattern: cibw-*
+        path: dist
+        merge-multiple: true
+
     - name: Publish package
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         password: ${{ secrets.TEST_PYPI_API_TOKEN }}
         repository-url: https://test.pypi.org/legacy/
+
+  test_TEST_PYPI:
+    needs: [upload_TEST_PYPI]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+         os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v3
+      with:
+        python-version: '3.9'
+    - name: test
+      run: |
+        sleep 60 # wait package to upload
+        pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple gendc-python==${{ github.event.release.tag_name }}
+        python -c "from  gendc_python.gendc_separator import descriptor as gendc"
+
+  upload_PYPI:
+    needs: [ test_TEST_PYPI ]
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+
+    steps:
+    - name: DL artifacts
+      uses: actions/download-artifact@v4
+      with: 
+        pattern: cibw-*
+        path: dist
+        merge-multiple: true    
+    - name: Publish package
+      uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
