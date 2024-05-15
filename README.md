@@ -147,8 +147,8 @@ gendc_container = descriptor.Container("binary_gendc_information")
     * int: The offset of the data part in bytes.
 
  * `get_data()`: Extracts and returns the data part based on its size and offset.
-  * Returns:
-    * bytes: The binary data of the part.
+   * Returns:
+     * bytes: The binary data of the part.
 
 * `get(key)`: General method to retrieve a specific value from current part header based on a given key.
   * Parameters:
