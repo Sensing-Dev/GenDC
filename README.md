@@ -95,11 +95,6 @@ gendc_container = descriptor.Container("binary_gendc_information")
   * Returns:
     * int: The number of parts.
 
-* `get_part_count()`: Retrieves a part based on its index.
-  * Parameters: 
-    * jth_part (int): The index of the part to retrieve.
-  * Returns:
-    * int: The number of parts.
 
 * `get_part_by_index(jth_part)`: Retrieves a part based on its index.
   * Parameters:
