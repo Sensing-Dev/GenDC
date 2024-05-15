@@ -76,7 +76,7 @@ class Container:
 
     ############################################################################
 
-    def get_component_by_idx(self, ith_component):
+    def get_component_by_index(self, ith_component):
         return self.component_headers[ith_component]
 
 

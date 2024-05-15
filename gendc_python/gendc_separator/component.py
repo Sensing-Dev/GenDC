@@ -50,7 +50,7 @@ class Component:
     def get_part_count(self):
         return get_value(self.header, "PartCount")
 
-    def get_part_by_idx(self, jth_part):
+    def get_part_by_index(self, jth_part):
         return self.part_headers[jth_part]
 
     def get_part_header_value(self, key, jth_part):
