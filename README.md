@@ -63,7 +63,7 @@ gendc_container = descriptor.Container("binary_gendc_information")
   * Returns:
     * int: The index of the first available component with the matching data type, or -1 if not found.
 
-* `get_component_by_idx(ith_component)`: Retrieves the component header at the specified index.
+* `get_component_by_index(ith_component)`: Retrieves the component header at the specified index.
   * Parameters:
     * ith_component (int): The index of the component to retrieve.
   * Returns:
@@ -101,7 +101,7 @@ gendc_container = descriptor.Container("binary_gendc_information")
   * Returns:
     * int: The number of parts.
 
-* `get_part_by_idx(jth_part)`: Retrieves a part based on its index.
+* `get_part_by_index(jth_part)`: Retrieves a part based on its index.
   * Parameters:
     * jth_part (int): The index of the part to retrieve.
   * Returns:
