@@ -158,7 +158,7 @@ public:
         return offset_ +  DEFAULT_PART_HEADER_SIZE + 8 * (kth_typespecific - 1) + typespecific_offset;
     }
 
-    int32_t getTypeSpecificByIndex(int32_t kth_typespecific ){
+    int64_t getTypeSpecificByIndex(int32_t kth_typespecific ){
         return TypeSpecific_[kth_typespecific];
     }
 
