@@ -1,2 +1,1 @@
-from . import descriptor
-  
+from .descriptor import Container

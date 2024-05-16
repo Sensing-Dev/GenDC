@@ -99,9 +99,9 @@ public:
 
 protected:
     template <typename T>
-    void DisplayItem(T item, bool hex_format){
+    void displayItem(T item, bool hex_format){
         if(sizeof(item) == sizeof(char)){
-            DisplayItem(static_cast<int>(item), hex_format);
+            displayItem(static_cast<int>(item), hex_format);
         }else{
             std::cout << std::right << std::setw(DISPLAY_VALUE_WIDTH);
             if (hex_format){
@@ -114,22 +114,22 @@ protected:
     }
 
     template <typename T>
-    int DisplayItemInfo(std::string item_name, T item, int level=default_display, bool hex_format=false){
+    int displayItemInfo(std::string item_name, T item, int level=default_display, bool hex_format=false){
         std::string indent = display_indent(level);
         int sizeof_item = sizeof(item);
         std::cout << indent << std::right << std::setw(DISPLAY_ITEM_WIDTH) << item_name;
         std::cout << std::right << std::setw(DISPLAY_SIZE_WIDTH)  << " (" << sizeof_item << "):";
-        DisplayItem<T>(item, hex_format);
+        displayItem<T>(item, hex_format);
         return sizeof_item;
     }
 
     template <typename T>
-    int DisplayContainer(std::string container_name, const std::vector<T>&container, int level=default_display, bool hex=false){
+    int displayContainer(std::string container_name, const std::vector<T>&container, int level=default_display, bool hex=false){
         int total_size = 0;
         if (container.size() > 0){
             std::string key = container_name;
             for(int i=0; i < container.size(); ++i){
-                total_size += DisplayItemInfo(i > 0 ? "" : key, container.at(i), level, hex);
+                total_size += displayItemInfo(i > 0 ? "" : key, container.at(i), level, hex);
             }
         }else{
             std::cout << display_indent(level) << std::right << std::setw(DISPLAY_ITEM_WIDTH) << container_name;
@@ -139,12 +139,12 @@ protected:
     }
 
     template <typename T, size_t N>
-    int DisplayContainer(std::string container_name, const std::array<T, N>&container, int level=default_display, bool hex=false){
+    int displayContainer(std::string container_name, const std::array<T, N>&container, int level=default_display, bool hex=false){
         int total_size = 0;
         if (container.size() > 0){
             std::string key = container_name;
             for(int i=0; i < container.size(); ++i){
-                total_size += DisplayItemInfo(i > 0 ? "" : key, container.at(i), level, hex);
+                total_size += displayItemInfo(i > 0 ? "" : key, container.at(i), level, hex);
             }
         }else{
             std::cout << display_indent(level) << std::right << std::setw(DISPLAY_ITEM_WIDTH) << container_name;
@@ -155,31 +155,31 @@ protected:
     
 
     template <typename T>
-    size_t Read(char* ptr, size_t offset, T& item){
+    size_t read(char* ptr, size_t offset, T& item){
         memcpy(&item, ptr+static_cast<int>(offset), sizeof(item));
         return sizeof(item);
     }
 
     template <typename T>
-    size_t Write(char* ptr, size_t offset, T item){
+    size_t write(char* ptr, size_t offset, T item){
         memcpy(ptr+static_cast<int>(offset), &item, sizeof(item));
         return sizeof(item);
     }
 
     template <typename T>
-    size_t WriteContainer(char* ptr, size_t offset, std::vector<T>&container){
+    size_t writeContainer(char* ptr, size_t offset, std::vector<T>&container){
         size_t container_offset = 0;
         for (T& item : container){
-            container_offset += Write(ptr, offset + container_offset, item);
+            container_offset += write(ptr, offset + container_offset, item);
         }
         return container_offset;
     }
 
     template <typename T, size_t N>
-    size_t WriteContainer(char* ptr, size_t offset, std::array<T, N>&container){
+    size_t writeContainer(char* ptr, size_t offset, std::array<T, N>&container){
         size_t container_offset = 0;
         for (T& item : container){
-            container_offset += Write(ptr, offset + container_offset, item);
+            container_offset += write(ptr, offset + container_offset, item);
         }
         return container_offset;
     }
