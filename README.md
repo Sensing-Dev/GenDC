@@ -1,6 +1,32 @@
 # gendc-python
 
-The gendc descriptor comprises three main elements: the container header, the component header, and the part header.
+The gendc descriptor comprises  main elements: the descriptor the container data 
+
+
+descriptor includes the the container header, the component header, and the part header.
+
+the container data includes all part data
+
+##  GenDC Containers layout
+- **Container Header**
+  - **Component 1 Header (RGB Planar Intensity)**
+    - Part 1 Header
+    - Part 2 Header
+    - Part 3 Header
+  - **Component 2 Header (Range)**
+    - Part 1 Header
+  - **Component 3 Header (Metadata)**
+    - Part 1 Header
+      - Part 1 Data (Metadata Chunk)
+- **Container Data**
+  - Part 1 Data (Red plane)
+  - Part 2 Data (Green plane)
+  - Part 3 Data (Blue plane)
+  - Part 1 Data (Range)
+  - Part 1 Data (Metadata Chunk)
+
+ **In this library, we reconstruct each element in following way:**
+
 - **Container Header**
   - **Component 1 Header (RGB Planar Intensity)**
     - Part 1 Header
@@ -15,6 +41,7 @@ The gendc descriptor comprises three main elements: the container header, the co
   - **Component 3 Header (Metadata)**
     - Part 1 Header
       - Part 1 Data (Metadata Chunk)
+
 
 ## Quick start
 ```python
@@ -35,18 +62,16 @@ gendc_container = descriptor.Container("binary_gendc_information")
     * binary_info (bytes): The binary data from which to load the signature.
   * Returns:
     * bool: True if the binary data is GenDC format
-* `get_container_size()`: Calculates the total size of the container.
-  * Returns:
-    * int: total size in bytes of the container
 
-* `get_container_size()`: Calculates the total size in bytes of the container by summing the sizes of the data and descriptor.
+* `get_data_size()`: Retrieves the size in bytes of the data of the container.
   * Returns:
-    * int: total size in bytes of the container
-
+    * int: total size in bytes of the container data
 * `get_descriptor_size()`: Retrieves the size in bytes of the descriptor part of the container.
   * Returns:
     * int: total size in bytes of the descriptor
-
+* `get_container_size()`: Calculates the total size of the container by adding up data size and descriptor size.
+  * Returns:
+    * int: total size in bytes of the container 
 * `get_component_count()`: Retrieves the count of components in the container.
   * Returns:
     * int: the count of components in the container.
@@ -95,14 +120,11 @@ gendc_container = descriptor.Container("binary_gendc_information")
   * Returns:
     * int: The number of parts.
 
-
 * `get_part_by_index(jth_part)`: Retrieves a part based on its index.
   * Parameters:
     * jth_part (int): The index of the part to retrieve.
   * Returns:
     * Part Object: The part header at the specified index.
-
-
 
 * `get(key)`: Retrieves a specific value from container header based on a given key.
   * Parameters:

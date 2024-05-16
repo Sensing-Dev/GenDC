@@ -21,10 +21,11 @@ class Part:
             "TypeSpecific": {"size": 8, "offset": [40], "value": []},
             # Note:
             # # ---------------------------------------- 40
-            "Dimension": {"size": 8, "offset": 40, "value": 0},
+            # "Dimension": {"size": 8, "offset": 40, "value": 0},
             # # ---------------------------------------- 48
-            # "Padding" : {"size": 4, "offset": 48, "value" : 0},
-            # "InfoReserved" : {"size": 4, "offset": 52, "value" : 0},
+            # "Padding": {"size": 4, "offset": 48, "value": 0},
+            # # ---------------------------------------- 52
+            # "InfoReserved": {"size": 4, "offset": 52, "value": 0},
             # # ---------------------------------------- 56
             # ...
         }
@@ -35,7 +36,11 @@ class Part:
             set_value(self.header, key, load_from_binary(self.header, binary_info, key))
 
         num_typespecific = int((get_value(self.header, "HeaderSize") - 40) / 8)
-        set_offset(self.header, "TypeSpecific", [part_cursor + 40 + 8 * i for i in range(num_typespecific)])
+
+        typespecific_offsets = [part_cursor + 40 + 8 * i for i in range(min(2,num_typespecific))]
+        typespecific_offsets.extend([part_cursor + 52 + 4 * i for i in range(num_typespecific-2)])
+
+        set_offset(self.header, "TypeSpecific", typespecific_offsets)
         set_value(self.header, "TypeSpecific", load_from_binary(self.header, binary_info, "TypeSpecific"))
         self.binary_info = binary_info
 
@@ -49,7 +54,7 @@ class Part:
         return get_value(self.header, "HeaderType") & 0xFF00 == 0x4000
 
     def get_dimension(self):
-        dimension = get_value(self.header, "Dimension")
+        dimension = get_value(self.header, "TypeSpecific")[0]
         if self.is_data_1D_image():
             return [dimension]
         elif self.is_data_2D_image():
@@ -66,10 +71,12 @@ class Part:
         return get_value(self.header, "DataOffset")
 
     def get_data(self):
-        size =  self.get_data_size()
+        size = self.get_data_size()
         start = self.get_data_offset()
-        return self.binary_info[start:start+size]
+        return self.binary_info[start:start + size]
 
+    def get_typespecific_by_index(self, kth_typespecific):
+        return  get_value(self.header, "TypeSpecific")[kth_typespecific]
 
     def get(self, key):
         return get_value(self.header, key)
