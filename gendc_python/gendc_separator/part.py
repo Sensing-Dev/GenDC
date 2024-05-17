@@ -35,10 +35,13 @@ class Part:
                 set_offset(self.header, key, part_cursor + get_offset(self.header, key))
             set_value(self.header, key, load_from_binary(self.header, binary_info, key))
 
+        # this num_typespecific includes Dimension, Padding and InfoReserved  
         num_typespecific = int((get_value(self.header, "HeaderSize") - 40) / 8)
 
+        # setup typespecific offset for Dimension and Padding with InfoReserved (optinoal) 
         typespecific_offsets = [part_cursor + 40 + 8 * i for i in range(min(2,num_typespecific))]
-        typespecific_offsets.extend([part_cursor + 52 + 4 * i for i in range(num_typespecific-2)])
+        # setup typespecific offset the other (optinoal)
+        typespecific_offsets.extend([part_cursor + 56 + 8 * i for i in range(num_typespecific-2)])
 
         set_offset(self.header, "TypeSpecific", typespecific_offsets)
         set_value(self.header, "TypeSpecific", load_from_binary(self.header, binary_info, "TypeSpecific"))
