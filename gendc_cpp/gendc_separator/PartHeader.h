@@ -58,12 +58,15 @@ public:
         if (num_typespecific_ > 1){
             offset += read(header_info, offset, Padding_[0]);
             offset += read(header_info, offset, Padding_[1]);
-            TypeSpecific_.push_back((static_cast<int64_t>(Padding_[0]) << 16) + static_cast<int64_t>(Padding_[1]));
-        }
-        if (num_typespecific_ > 2){
             offset += sizeof(InfoReserved_);
-            TypeSpecific_.push_back(static_cast<int64_t>(InfoReserved_));
+            TypeSpecific_.push_back(
+                (static_cast<int64_t>(Padding_[0]) << 48) 
+                + (static_cast<int64_t>(Padding_[1]) << 32)
+                + static_cast<int64_t>(InfoReserved_)
+                );
         }
+
+        // if num_typespecific_ > 2
         int64_t typespecific_item;
         for (int i = 0; i < num_typespecific_ - 2; ++i){
             offset += read(header_info, offset, typespecific_item);
