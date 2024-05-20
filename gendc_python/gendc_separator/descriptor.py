@@ -70,7 +70,7 @@ class Container:
     def get_1st_component_idx_by_sourceid(self, target_sourceid):
         for ith, ch in enumerate(self.component_headers):
             if ch.is_valid():
-                if ch.get("SourceId", -1) == target_sourceid:
+                if ch.get("SourceId") == target_sourceid:
                     return ith
         return -1
 
