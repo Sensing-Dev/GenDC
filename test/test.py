@@ -14,7 +14,7 @@ def debug_log(msg):
 
 def error_log(msg):
     print('[ERR]', msg)
-    raise Exception( msg)
+    sys.exit(1)
 
 def passed_or_failed(ret):
     if ret:
@@ -22,19 +22,20 @@ def passed_or_failed(ret):
     else:
         return '{:>13}'.format('FAILED')
 
-def test_log(test_item, expected_value, actual_value):
-    ret = expected_value == actual_value
-    msg = '\t{:20} '.format(test_item)
+def is_error(test_item, expected_value, actual_value, show_log):
+    failed = expected_value != actual_value
+    msg = '{:32} '.format(test_item)
 
-    if ret:
+    if not failed:
         msg += '[{:<12}]'.format('PASSED')
     else:
         msg += '[{:>12}]'.format('FAILED') 
     msg += ' '
-    msg += ': Expected {:>10}, while it returned {:>10}'.format(expected_value, actual_value)
+    msg += ': Expected {:>10} ({:>10})'.format(expected_value, actual_value)
 
-    print(msg)
-    return ret
+    if show_log or failed:
+        print(msg)
+    return failed
 
 # This part is to prevent this test.py from using pip-installed gendc_separator
 test_dir = os.path.dirname(__file__)
@@ -49,18 +50,27 @@ from gendc_separator import descriptor as gendc
 sys.path.append(str(test_dir))
 from data_properties import test_cases
 
+def format_dim(dimension):
+    if len(dimension) == 0:
+        return '0'
+    return 'x'.join([str(d) for d in dimension])
+
 if __name__ == "__main__":
 
-    default_data_dir = os.path.join(root_dir, 'gendc_samples')
+    default_data_dir = os.path.join(root_dir, 'test/generated_stub')
 
     parser = argparse.ArgumentParser(description="gendc separator test script")
     parser.add_argument('-d', '--directory', default=default_data_dir, type=str, help='Directory to load binfile')
-    
+    parser.add_argument('-v', '--verbose', \
+                        action='store_true', help='Show all the logs regardless of the test results')
     argvs = parser.parse_args()
     data_dir = argvs.directory
+    show_log = argvs.verbose
     
     if not (os.path.exists(data_dir) and os.path.isdir(data_dir)):
         error_log("Directory " + data_dir + " does not exist. Please use -h to set option.")
+
+    num_failed = 0
 
 
     for i, test_file in enumerate(test_cases):
@@ -73,36 +83,51 @@ if __name__ == "__main__":
         with open(bin_file, mode='rb') as ifs:
             filecontent = ifs.read()
             cursor = 0
+            cnt_gendc = 0
 
-            # while cursor < len(filecontent):
-            gendc_container = gendc.Container(filecontent[cursor:])
-            descriptor_size = gendc_container.get_descriptor_size()
-            container_data_size = gendc_container.get_data_size()
+            while cursor < len(filecontent):
+                total_actual_datasize = 0
+                gendc_container = gendc.Container(filecontent[cursor:])
+                descriptor_size = gendc_container.get_descriptor_size()
+                container_data_size = gendc_container.get_data_size()
 
-            num_component_count = gendc_container.get_component_count()
-            test_log('Component count', test_cases[test_file]['num_components'], num_component_count)
-            print()
+                num_component_count = gendc_container.get_component_count()
+                num_failed += is_error('Descriptor size', test_cases[test_file]['descriptor_size'], descriptor_size, show_log)
+                num_failed += is_error('Container datasize', test_cases[test_file]['container_datasize'], container_data_size, show_log)
+                num_failed += is_error('Component count', test_cases[test_file]['num_components'], num_component_count, show_log)
 
-            for ith_component_idx in range(num_component_count):
-                ith_component = gendc_container.get_component_by_index(ith_component_idx)
-                test_log('Component' + str(ith_component_idx) + ' Validity', test_cases[test_file]['valid_component'][ith_component_idx], ith_component.is_valid())
-                test_log('Component' + str(ith_component_idx) + ' TypeId', test_cases[test_file]['TypeId'][ith_component_idx], ith_component.get_type_id())
-                test_log('Component' + str(ith_component_idx) + ' SourceId', test_cases[test_file]['SourceId'][ith_component_idx], ith_component.get('SourceId'))
-                test_log('Component' + str(ith_component_idx) + ' Format', test_cases[test_file]['Format'][ith_component_idx], ith_component.get('Format'))
+                if show_log:
+                    print()
 
-                num_part_count = ith_component.get_part_count()
-                ith_component_datasize = 0
-                for jth_part_idx in range(num_part_count):
-                    jth_part = ith_component.get_part_by_index(jth_part_idx)
-                    ith_component_datasize += jth_part.get_data_size()
+                for ith_component_idx in range(num_component_count):
 
-                test_log('Component' + str(ith_component_idx) + ' DataSize', test_cases[test_file]['DataSize'][ith_component_idx], ith_component_datasize)
+                    ith_component = gendc_container.get_component_by_index(ith_component_idx)                   
+                    num_failed += is_error('Component' + str(ith_component_idx) + ' Validity', test_cases[test_file]['valid_component'][ith_component_idx], ith_component.is_valid(), show_log)
+                    num_failed += is_error('Component' + str(ith_component_idx) + ' TypeId', test_cases[test_file]['TypeId'][ith_component_idx], ith_component.get_type_id(), show_log)
+                    num_failed += is_error('Component' + str(ith_component_idx) + ' SourceId', test_cases[test_file]['SourceId'][ith_component_idx], ith_component.get('SourceId'), show_log)
+                    num_failed += is_error('Component' + str(ith_component_idx) + ' Format', test_cases[test_file]['Format'][ith_component_idx], ith_component.get('Format'), show_log)
 
-                print()
+                    num_part_count = ith_component.get_part_count()
+                    ith_component_datasize = 0
+                    for jth_part_idx in range(num_part_count):
+                        jth_part = ith_component.get_part_by_index(jth_part_idx)
+                        ith_component_datasize += jth_part.get_data_size()
+                        dimension = jth_part.get_dimension()
+                        num_failed += is_error('Component' + str(ith_component_idx) + ' Part' + str(jth_part_idx) + ' Dimension', test_cases[test_file]['Dimension'][ith_component_idx], format_dim(dimension), show_log)
 
-                    
+                    num_failed += is_error('Component' + str(ith_component_idx) + ' DataSize', test_cases[test_file]['DataSize'][ith_component_idx], ith_component_datasize, show_log)
 
-                # cursor = cursor + descriptor_size + container_data_size
+                    total_actual_datasize += ith_component_datasize
+
+                    if show_log:
+                        print()
+                cursor += descriptor_size + container_data_size
+                cnt_gendc += 1
+
+    info_log(str(num_failed) + ' ERROR in this test in ' + str(cnt_gendc) + ' GenDC container(s)')
+
+    if num_failed != 0:
+        sys.exit(1)
 
 
 
