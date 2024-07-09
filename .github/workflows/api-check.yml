@@ -20,11 +20,23 @@ jobs:
         pip install -r test/requirements.txt
 
     - name: Python test
-      id: check-result
+      id: check-result-python
       run: |
         if python3 test/test.py -d test/generated_stub/; then
-          echo 'PASSED'
+          echo 'PASSED PYTHON test'
         else
-          echo 'FAILED'
+          echo 'FAILED PYTHON test'
+          exit 1
+        fi
+
+    - name: C++ test
+      id: check-result-test
+      run: |
+        cd test
+        g++ test.cpp -o test -I ../gendc_cpp/gendc_separator/
+        if ./test; then
+          echo 'PASSED C++ test'
+        else
+          echo 'FAILED C++ test'
           exit 1
         fi
