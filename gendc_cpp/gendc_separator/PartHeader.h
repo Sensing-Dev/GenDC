@@ -51,17 +51,14 @@ public:
         num_typespecific_ = getNumTypeSpecific(HeaderSize_);
 
         if (num_typespecific_ > 0){
-            offset += read(header_info, offset, Dimension_[0]);
-            offset += read(header_info, offset, Dimension_[1]);
-            TypeSpecific_.push_back((static_cast<int64_t>(Dimension_[0]) << 32) + static_cast<int64_t>(Dimension_[1]));
+            offset += read(header_info, offset, raw_Dimension_);
+            TypeSpecific_.push_back(offset);
         }
         if (num_typespecific_ > 1){
-            offset += read(header_info, offset, Padding_[0]);
-            offset += read(header_info, offset, Padding_[1]);
+            offset += read(header_info, offset, raw_Padding_);
             offset += sizeof(InfoReserved_);
             TypeSpecific_.push_back(
-                (static_cast<int64_t>(Padding_[0]) << 48) 
-                + (static_cast<int64_t>(Padding_[1]) << 32)
+                (static_cast<int64_t>(raw_Padding_) << 32)
                 + static_cast<int64_t>(InfoReserved_)
                 );
         }
@@ -88,8 +85,8 @@ public:
         DataSize_= src.DataSize_;
         DataOffset_= src.DataOffset_;
 
-        Dimension_= src.Dimension_;
-        Padding_= src.Padding_;
+        raw_Dimension_= src.raw_Dimension_;
+        raw_Padding_= src.raw_Padding_;
         TypeSpecific_= src.TypeSpecific_;
         return *this;
     }
@@ -132,19 +129,21 @@ public:
                 //metadata
             case 0x4100:{
                 // 1D image
-                int64_t first = static_cast<int64_t>(Dimension_[0]) << 32;
-                int64_t second = static_cast<int64_t>(Dimension_[1]);
-                ret.push_back(static_cast<int32_t>(first + second));
+                ret.push_back(static_cast<int32_t>(raw_Dimension_));
                 return ret;
             }
             case 0x4200:{
                 //2D image
-                ret.push_back(Dimension_[0]);
-                ret.push_back(Dimension_[1]);
+                char* dim_ptr = reinterpret_cast<char*>(&raw_Dimension_);
+                int32_t width = *(reinterpret_cast<int32_t*>(dim_ptr));
+                int32_t height = *(reinterpret_cast<int32_t*>(dim_ptr + 4));
+
+                ret.push_back(width);
+                ret.push_back(height);
                 return ret;
             }
             default:{
-                ret.push_back(-1);
+                ret.push_back(static_cast<int32_t>(raw_Dimension_));
                 return ret;
             }
 
@@ -178,8 +177,10 @@ public:
         total_size += displayItemInfo("DataSize_", DataSize_, 3);
         total_size += displayItemInfo("DataOffset_", DataOffset_, 3);
 
+        std::vector<int32_t> Dimension_ = this->getDimension();
+
         total_size += displayContainer("Dimension_", Dimension_, 3);
-        total_size += displayContainer("Padding_", Padding_, 3);
+        total_size += displayItemInfo("Padding_", raw_Padding_, 3);
         total_size += displayItemInfo("InfoReserved_", InfoReserved_, 3);
 
         total_size += displayContainer("TypeSpecific_", TypeSpecific_, 3);
@@ -205,8 +206,8 @@ private:
         offset += write(ptr, offset, FlowOffset_);
         offset += write(ptr, offset, DataSize_);
         offset += write(ptr, offset, DataOffset_);
-        offset += write(ptr, offset, Dimension_);
-        offset += write(ptr, offset, Padding_);
+        offset += write(ptr, offset, raw_Dimension_);
+        offset += write(ptr, offset, raw_Padding_);
         offset += write(ptr, offset, InfoReserved_);
         offset += write(ptr, offset, TypeSpecific_);
 
@@ -227,8 +228,8 @@ private:
     int64_t DataOffset_;
 
     // optional
-    std::array<int32_t, 2> Dimension_;
-    std::array<int16_t, 2> Padding_;
+    int64_t raw_Dimension_; // could be either (x, y) or (x)
+    int32_t raw_Padding_; // could be either (x, y) or (x)
     const int32_t InfoReserved_ = 0;
     std::vector<int64_t> TypeSpecific_;
 
