@@ -34,7 +34,7 @@ jobs:
       run: |
         cd test
         g++ test.cpp -o test -I ../gendc_cpp/gendc_separator/
-        if ./test; then
+        if ./test -v; then
           echo 'PASSED C++ test'
         else
           echo 'FAILED C++ test'

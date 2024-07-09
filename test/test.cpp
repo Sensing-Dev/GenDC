@@ -173,9 +173,6 @@ int main(int argc, char* argv[]){
 
         prefix = "\tComponent count" + std::to_string(ith_comp_idx) + " ";
         num_failed += isError(prefix + "DataSize", DATASIZE[ith_comp_idx], ith_comp_datasize, show_log );
-
-        num_failed += isError(prefix + "Test", 100, 200, show_log );
-
         if (show_log){
             std::cout << std::endl;
         } 
