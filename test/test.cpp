@@ -1,7 +1,7 @@
 /*
 
 g++ test.cpp -o test \
--I ../gendc_cpp/gendc_separator/ \
+-I ../gendc_cpp/gendc_separator/
 
 */
 
@@ -15,14 +15,15 @@ g++ test.cpp -o test \
 #define Data64 0x0140011D
 
 const int32_t NUM_COMPONENT = 9;
-const int32_t DESCRIPTOR_SIZE = 1280;
-const int64_t CONTAINER_DATASIZE = 2077344;
+const int32_t DESCRIPTOR_SIZE = 1520;
+const int64_t CONTAINER_DATASIZE = 2076992;
 
 const bool VALIDITY[9] = {1, 1, 1, 1, 1, 1, 0, 0, 0};
+const int32_t NUM_PART[9] = {1, 2, 1, 1, 1, 3, 0, 0, 0};
 const int16_t SOURCEID[9] = {0x1001, 0x2001, 0x3001, 0x3002, 0x3003, 0x4001, 0x0001, 0x5001, 0x6001};
 const int64_t TYPEID[9] = {1, 0x8001, 0x8001, 0x8001, 0x8001, 0x8001, 0x8001, 0x8001, 0x8001};
-const int64_t DATASIZE[9] = {2073600, 3200, 32, 32, 32, 128, 0, 0, 0};
-const int32_t FORMAT[9] = {Mono8, Data32, Data16, Data16, Data16, Data64, Data8, Data8, Data8};
+const int64_t DATASIZE[9] = {2073600, 3200, 32, 32, 32, 96, 0, 0, 0};
+const int32_t FORMAT[9] = {Mono8, Data16, Data16, Data16, Data16, Data16, Data8, Data8, Data8};
 const std::string DIMENSION[9] = {"1920x1080", "800", "16", "16", "16", "16", "0", "0", "0"};
 
 #include <unistd.h>
@@ -53,21 +54,20 @@ template <typename T>
 int isError(std::string item_name, T expected_value, T actual_value, bool display_log){
     bool failed = expected_value != actual_value;
 
-    if (display_log){
-        if (failed){
-            std::cout
-                << std::left << std::setw(32) << item_name
-                << "["
-                << std::right << std::setw(12) << "FAILED"
-                << "]" 
-                << " : Expected "
-                << std::right << std::setw(10) << expected_value
-                << " ("
-                << std::right << std::setw(10) << actual_value
-                << ")"
-                << std::endl;
-        }else{
-        
+    if (failed){
+        std::cout
+            << std::left << std::setw(32) << item_name
+            << "["
+            << std::right << std::setw(12) << "FAILED"
+            << "]" 
+            << " : Expected "
+            << std::right << std::setw(10) << expected_value
+            << " ("
+            << std::right << std::setw(10) << actual_value
+            << ")"
+            << std::endl;
+    }else{
+        if (display_log){
             std::cout
                 << std::left << std::setw(32) << item_name
                 << "["
