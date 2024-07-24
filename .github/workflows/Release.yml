@@ -46,6 +46,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   publish-python-module:
+    needs: [release-job]
     uses: ./.github/workflows/python-publish.yml
     with:
       refname: ${{ github.ref_name }}
