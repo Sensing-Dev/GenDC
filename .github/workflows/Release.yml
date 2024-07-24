@@ -18,6 +18,22 @@ jobs:
         cd gendc_cpp
         cp ../LICENSE.txt .
         zip -r gendc_separator_${{ github.ref_name }}_win64.zip gendc_separator
+
+    - name: Update gendc-python version by tag
+      run: |
+        new_version=${{ github.ref_name }}
+        echo "
+        __version__ = '${new_version:1}' # this will be automaticall updated by cicd
+        from . import gendc_separator
+        " >> ${{ github.workspace }}/gendc_python/__init__.py
+
+    - name: Commit updates
+      uses: EndBug/add-and-commit@v7
+      with:
+        branch: main
+        message: "Update gendc-pyton module version to ${{ github.ref_name }} by Release workflow"
+        add: "['${{ github.workspace }}/gendc_python/__init__.py']"
+
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
