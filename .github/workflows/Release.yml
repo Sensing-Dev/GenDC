@@ -29,12 +29,6 @@ jobs:
 
     - name: Save version tag
       run: echo "RELEASE_VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
-    
-    - name: Upload ref name as artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: release-version
-        path: $GITHUB_ENV
 
     - name: Commit updates
       uses: EndBug/add-and-commit@v7

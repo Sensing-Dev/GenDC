@@ -29,16 +29,8 @@ jobs:
       with:
         ref: main
         # Release workflow updated gendc-python module version
-    - name: Download ref name artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: release-version
-    - name: Check tag
-      run: |
-        VERSION=$(cat $GITHUB_WORKSPACE/release-version)
-        echo "version_tag=$VERSION" >> $GITHUB_ENV
     - name: Check output
-      run: echo ${{ env.version_tag }}
+      run: echo ${{ env.RELEASE_VERSION }}
   #   - name: Set up Python
   #     uses: actions/setup-python@v3
   #     with:
