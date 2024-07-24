@@ -44,3 +44,8 @@ jobs:
               gendc_cpp/gendc_separator*.zip
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Publish python module
+      uses: ./.github/workflows/python-publish.yml
+      with:
+        refname: ${{ github.ref_name }}

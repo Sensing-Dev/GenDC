@@ -9,10 +9,11 @@
 name: Upload Python Package
 
 on:
-  workflow_run:
-    workflows: [Release GenDC Header Library]
-    types:
-      - completed
+  workflow_call:
+    inputs:
+      refname:
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -30,7 +31,9 @@ jobs:
         ref: main
         # Release workflow updated gendc-python module version
     - name: Check output
-      run: echo ${{ env.RELEASE_VERSION }}
+      run: |
+        echo ${{ inputs.refname }}
+        cat ${{ github.workspace }}/gendc_python/__init__.py
   #   - name: Set up Python
   #     uses: actions/setup-python@v3
   #     with:
