@@ -23,9 +23,18 @@ jobs:
       run: |
         new_version=${{ github.ref_name }}
         echo "
-        __version__ = '${new_version:1}' # this will be automaticall updated by cicd
+        __version__ = '${new_version:1}' # this was automatically updated by cicd at release
         from . import gendc_separator
-        " >> ${{ github.workspace }}/gendc_python/__init__.py
+        " > ${{ github.workspace }}/gendc_python/__init__.py
+
+    - name: Save version tag
+      run: echo "RELEASE_VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
+    
+    - name: Upload ref name as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: release-version
+        path: $GITHUB_ENV
 
     - name: Commit updates
       uses: EndBug/add-and-commit@v7

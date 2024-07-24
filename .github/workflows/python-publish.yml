@@ -9,8 +9,10 @@
 name: Upload Python Package
 
 on:
-  release:
-    types: [published]
+  workflow_run:
+    workflows: ["Release"]
+    types:
+      - completed
 
 permissions:
   contents: read
@@ -24,10 +26,23 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v3
       with:
-        python-version: '3.9'
+        ref: main
+        # Release workflow updated gendc-python module version
+    - name: Download ref name artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: release-version
+    - name: Check tag
+      run: |
+        VERSION=$(cat $GITHUB_WORKSPACE/release-version)
+        echo "version_tag=$VERSION" >> $GITHUB_ENV
+    - name: Check output
+      run: echo ${{ env.version_tag }}
+  #   - name: Set up Python
+  #     uses: actions/setup-python@v3
+  #     with:
+  #       python-version: '3.9'
 
   #   - name: Install dependencies
   #     run: |
