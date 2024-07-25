@@ -86,3 +86,7 @@ set PATH=%GENDC%/gst/vcpkg_installed/x64-windows/tools/gstreamer;%PATH%
 
 * Non-gendc file
   * 120-gendc.bin: https://drive.google.com/drive/folders/1R8J__41lxCdlHPWs30wdqVF1phZpIB0w?usp=drive_link 
+
+```bash
+python test/test.py -i  <gendc file bin> -o <output directory> -n <num components>
+```
