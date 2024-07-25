@@ -29,6 +29,15 @@ GST_DEBUG_CATEGORY_STATIC (gst_gendc_separator_debug);
 #define DESCRIPTOR_SIZE_OFFSET 48
 #define DESCRIPTOR_SIZE_SIZE 4
 
+#define GST_GENDC_SRPARATOR_DEBUG 1
+
+void debug_msg(const gchar* format){
+  if (GST_GENDC_SRPARATOR_DEBUG){
+    g_print(format);
+    g_print("\n");
+  }
+}
+
 /* Filter signals and args */
 enum
 {

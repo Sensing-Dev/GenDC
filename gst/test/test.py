@@ -83,7 +83,13 @@ if __name__ == "__main__":
         if IS_WINDOWS:
             print()
             stdout = ret.stdout.decode('UTF-8').split('\r\n')
+            print('=== stdout ===')
             for l in stdout:
+                print(l)
+
+            print('=== stderr ===')
+            stderr = ret.stderr.decode('UTF-8').split('\r\n')
+            for l in stderr:
                 print(l)
     
     with open('{0}/descriptor.bin'.format(output_dir), mode='rb') as ifs:
@@ -110,7 +116,8 @@ if __name__ == "__main__":
                 else:
                     disp_msg('{0} is a invalid image file'.format(filename), 'error')
                     exit(1)
-            except:
+            except Exception as err:
                 disp_msg('{0} is a invalid image file'.format(filename), 'error')
+                print(err)
                 exit(1)
             
