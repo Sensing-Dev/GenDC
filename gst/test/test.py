@@ -38,6 +38,15 @@ def generate_command(input_bin, output_dir, num_output=None):
 def disp_msg(msg, flag = 'info'):
     print('[{0:5}]'.format(flag), msg)
 
+def generate_dummpy_image(wh):
+    w = wh[0]
+    h = wh[1]
+    row = row = np.arange(w)
+    array = np.tile(row, (h, 1))
+    for i in range(h):
+        array[i] += i
+    return array.astype('uint8')
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Test for Parse GenDC gst-plugin")
     parser.add_argument('-i', '--input', default='.', type=str, \
@@ -79,8 +88,6 @@ if __name__ == "__main__":
     
     with open('{0}/descriptor.bin'.format(output_dir), mode='rb') as ifs:
         filecontent = ifs.read()
-        cursor = 0
-
         try:
             gendc_container = gendc.Container(filecontent)
             descriptor_size = gendc_container.get_descriptor_size()
@@ -89,3 +96,21 @@ if __name__ == "__main__":
         except :
             disp_msg('Wrong descriptor'.format(input_bin), 'error')
             exit(1)
+
+    # check component 0 (image)
+    if num_component > 0:
+        filename = '{0}/output{1}.bin'.format(output_dir, 0)
+        expected_image = generate_dummpy_image([1920, 1080])
+        with open(filename, mode='rb') as ifs:
+            filecontent = ifs.read()
+            try:
+                reshaped_data = np.frombuffer(filecontent, np.uint8).reshape([1080, 1920])
+                if np.array_equal(reshaped_data, expected_image):
+                    print("OK", filename, "is a valid image file")
+                else:
+                    disp_msg('{0} is a invalid image file'.format(filename), 'error')
+                    exit(1)
+            except:
+                disp_msg('{0} is a invalid image file'.format(filename), 'error')
+                exit(1)
+            
