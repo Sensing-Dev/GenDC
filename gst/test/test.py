@@ -12,6 +12,29 @@ GST_LAUNCH = 'gst-launch-1.0'
 
 import subprocess
 
+def concat_plugins(*args):
+    ret = args[0]
+
+    if len(args) > 1:
+        for arg in args[1:]:
+            ret += ['!'] + arg
+
+    return ret
+
+def generate_command(input_bin, output_dir, num_output=None):
+    cmd = [GST_LAUNCH, 'filesrc', 'location={0}'.format(input_bin)]
+    gendcseparator = ['gendcseparator']
+    
+    if not num_output:
+        filesink = ['filesink', 'location={0}/descriptor.bin'.format(output_dir)]
+    else:
+        filesink = concat_plugins(['queue'], ['filesink', 'location={0}/descriptor.bin'.format(output_dir)])
+        for i in range(0, num_output):
+            pipeline_part = concat_plugins(['gendcseparator0.'], ['queue'], ['filesink', 'location={0}/output{1}.bin'.format(output_dir, i)])
+            filesink += pipeline_part
+
+    return concat_plugins(cmd, gendcseparator, filesink)
+
 def disp_msg(msg, flag = 'info'):
     print('[{0:5}]'.format(flag), msg)
 
@@ -21,9 +44,12 @@ if __name__ == "__main__":
                         help='Input gendc file')
     parser.add_argument('-o', '--output', default='.', type=str, \
                         help='Output directory')
+    parser.add_argument('-n', '--num_component', default=None, type=int, \
+                        help='The number of components')
     
     input_bin = parser.parse_args().input
     output_dir = parser.parse_args().output
+    num_component = parser.parse_args().num_component
     os.makedirs(output_dir, exist_ok=True)
 
     if not (os.path.isfile(input_bin)):
@@ -34,8 +60,8 @@ if __name__ == "__main__":
     disp_msg('Input: {0}'.format(input_bin), 'info')
     disp_msg('Output: {0}'.format(output_dir), 'info')
 
-    command = [GST_LAUNCH, 
-        'filesrc', 'location={0}'.format(input_bin), '!', 'gendcseparator', '!', 'filesink', 'location={0}/descriptor.bin'.format(output_dir)]
+    command  = generate_command(input_bin, output_dir, num_component)
+
 
     disp_msg('Command: {0}'.format(' '.join(command)), 'info')
 
