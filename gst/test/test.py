@@ -7,6 +7,8 @@ import cv2
 
 import os
 
+DISPLAY_WARNING = 0
+
 IS_WINDOWS = os.name == 'nt'
 GST_LAUNCH = 'gst-launch-1.0'
 
@@ -87,10 +89,11 @@ if __name__ == "__main__":
             for l in stdout:
                 print(l)
 
-            print('=== stderr ===')
-            stderr = ret.stderr.decode('UTF-8').split('\r\n')
-            for l in stderr:
-                print(l)
+            if DISPLAY_WARNING:
+                print('=== stderr ===')
+                stderr = ret.stderr.decode('UTF-8').split('\r\n')
+                for l in stderr:
+                    print(l)
     
     with open('{0}/descriptor.bin'.format(output_dir), mode='rb') as ifs:
         filecontent = ifs.read()
@@ -118,6 +121,13 @@ if __name__ == "__main__":
                     exit(1)
             except Exception as err:
                 disp_msg('{0} is a invalid image file'.format(filename), 'error')
+                if len(filecontent) != 1080 * 1920:
+                    disp_msg('DIFF {0}'.format(len(filecontent)-1080 * 1920), 'error')
+                    disp_msg('{0} file size is {1}'.format(filename, len(filecontent)), 'error')
+                    disp_msg('expected size is {0}'.format(1080 * 1920), 'error')
+                print(4096-2304)
                 print(err)
                 exit(1)
+
+
             
