@@ -79,7 +79,7 @@ jobs:
 #          echo "::set-output name=already-exists::false"
 #        fi
 
- test_TEST_PYPI:
+  test_TEST_PYPI:
    needs: [upload-test-pypi]
    if: needs.upload-test-pypi.outputs.already-exists == 'true' || success()
    runs-on: ${{ matrix.os }}
