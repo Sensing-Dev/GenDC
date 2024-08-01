@@ -63,21 +63,21 @@ jobs:
         path: dist
         merge-multiple: true
 
-#    - name: Publish package
-#      uses: pypa/gh-action-pypi-publish@release/v1
-#      with:
-#        password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-#        repository-url: https://test.pypi.org/legacy/
-#      continue-on-error: true
-#
-#    - name: Check if upload failed due to existing file
-#      id: check-upload
-#      run: |
-#        if grep -q "File already exists" upload.log; then
-#          echo "::set-output name=already-exists::true"
-#        else
-#          echo "::set-output name=already-exists::false"
-#        fi
+    - name: Publish package
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+        repository-url: https://test.pypi.org/legacy/
+      continue-on-error: true
+
+    - name: Check if upload failed due to existing file
+      id: check-upload
+      run: |
+        if grep -q "File already exists" upload.log; then
+          echo "::set-output name=already-exists::true"
+        else
+          echo "::set-output name=already-exists::false"
+        fi
 
   test_TEST_PYPI:
    needs: [upload-test-pypi]
@@ -113,7 +113,8 @@ jobs:
         path: dist
         merge-multiple: true
 
-#    - name: Publish package
-#      uses: pypa/gh-action-pypi-publish@release/v1
-#      with:
-#        password: ${{ secrets.PYPI_API_TOKEN }}
+    - name: Publish package
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        password: ${{ secrets.PYPI_API_TOKEN }}
+ 
