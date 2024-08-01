@@ -43,10 +43,10 @@ jobs:
         CIBW_BUILD: cp39-*
         CIBW_ENVIRONMENT: GENDC_VERSION=${{ github.event.release.tag_name }}
 
-#    - uses: actions/upload-artifact@v4
-#      with:
-#        name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
-#        path: wheelhouse/*.whl
+    - uses: actions/upload-artifact@v4
+      with:
+        name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
+        path: wheelhouse/*.whl
 
   upload-test-pypi:
     needs: [build_wheels]
@@ -63,40 +63,40 @@ jobs:
         path: dist
         merge-multiple: true
 
-    - name: Publish package
-      uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-        repository-url: https://test.pypi.org/legacy/
-      continue-on-error: true
+#    - name: Publish package
+#      uses: pypa/gh-action-pypi-publish@release/v1
+#      with:
+#        password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+#        repository-url: https://test.pypi.org/legacy/
+#      continue-on-error: true
+#
+#    - name: Check if upload failed due to existing file
+#      id: check-upload
+#      run: |
+#        if grep -q "File already exists" upload.log; then
+#          echo "::set-output name=already-exists::true"
+#        else
+#          echo "::set-output name=already-exists::false"
+#        fi
 
-    - name: Check if upload failed due to existing file
-      id: check-upload
-      run: |
-        if grep -q "File already exists" upload.log; then
-          echo "::set-output name=already-exists::true"
-        else
-          echo "::set-output name=already-exists::false"
-        fi
-
-  test_TEST_PYPI:
-    needs: [upload-test-pypi]
-    if: needs.upload-test-pypi.outputs.already-exists == 'true' || success()
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-         os: [ubuntu-latest, macos-latest, windows-latest]
-
-    steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-python@v3
-      with:
-        python-version: '3.9'
-    - name: test
-      run: |
-        sleep 60 # wait package to upload
-        pip3 install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple gendc-python==${{ github.event.release.tag_name }}
-        python3 -c "from  gendc_python.gendc_separator import descriptor as gendc"
+#  test_TEST_PYPI:
+#    needs: [upload-test-pypi]
+#    if: needs.upload-test-pypi.outputs.already-exists == 'true' || success()
+#    runs-on: ${{ matrix.os }}
+#    strategy:
+#      matrix:
+#         os: [ubuntu-latest, macos-latest, windows-latest]
+#
+#    steps:
+#    - uses: actions/checkout@v4
+#    - uses: actions/setup-python@v3
+#      with:
+#        python-version: '3.9'
+#    - name: test
+#      run: |
+#        sleep 60 # wait package to upload
+#        pip3 install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple gendc-python==${{ github.event.release.tag_name }}
+#        python3 -c "from  gendc_python.gendc_separator import descriptor as gendc"
 
   upload_PYPI:
     needs: [ test_TEST_PYPI ]
