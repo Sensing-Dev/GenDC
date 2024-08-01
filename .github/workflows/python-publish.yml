@@ -79,24 +79,24 @@ jobs:
 #          echo "::set-output name=already-exists::false"
 #        fi
 
-#  test_TEST_PYPI:
-#    needs: [upload-test-pypi]
-#    if: needs.upload-test-pypi.outputs.already-exists == 'true' || success()
-#    runs-on: ${{ matrix.os }}
-#    strategy:
-#      matrix:
-#         os: [ubuntu-latest, macos-latest, windows-latest]
-#
-#    steps:
-#    - uses: actions/checkout@v4
-#    - uses: actions/setup-python@v3
-#      with:
-#        python-version: '3.9'
-#    - name: test
-#      run: |
-#        sleep 60 # wait package to upload
-#        pip3 install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple gendc-python==${{ github.event.release.tag_name }}
-#        python3 -c "from  gendc_python.gendc_separator import descriptor as gendc"
+ test_TEST_PYPI:
+   needs: [upload-test-pypi]
+   if: needs.upload-test-pypi.outputs.already-exists == 'true' || success()
+   runs-on: ${{ matrix.os }}
+   strategy:
+     matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+   steps:
+   - uses: actions/checkout@v4
+   - uses: actions/setup-python@v3
+     with:
+       python-version: '3.9'
+   - name: test
+     run: |
+       sleep 60 # wait package to upload
+       pip3 install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple gendc-python==${{ github.event.release.tag_name }}
+       python3 -c "from  gendc_python.gendc_separator import descriptor as gendc"
 
   upload_PYPI:
     needs: [ test_TEST_PYPI ]
