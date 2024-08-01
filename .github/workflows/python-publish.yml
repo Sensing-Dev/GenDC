@@ -43,10 +43,10 @@ jobs:
         CIBW_BUILD: cp39-*
         CIBW_ENVIRONMENT: GENDC_VERSION=${{ github.event.release.tag_name }}
 
-    - uses: actions/upload-artifact@v4
-      with:
-        name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
-        path: wheelhouse/*.whl
+#    - uses: actions/upload-artifact@v4
+#      with:
+#        name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
+#        path: wheelhouse/*.whl
 
   upload-test-pypi:
     needs: [build_wheels]
@@ -111,8 +111,9 @@ jobs:
       with: 
         pattern: cibw-*
         path: dist
-        merge-multiple: true    
-    - name: Publish package
-      uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        password: ${{ secrets.PYPI_API_TOKEN }}
+        merge-multiple: true
+
+#    - name: Publish package
+#      uses: pypa/gh-action-pypi-publish@release/v1
+#      with:
+#        password: ${{ secrets.PYPI_API_TOKEN }}
