@@ -83,7 +83,6 @@ struct _GstGenDCSeparator
 
   guint32 framecount;
   gboolean head;
-  gboolean fistrun;
 };
 
 

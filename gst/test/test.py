@@ -25,14 +25,14 @@ def concat_plugins(*args):
 
 def generate_command(input_bin, output_dir, num_output=None):
     cmd = [GST_LAUNCH, 'filesrc', 'location={0}'.format(input_bin)]
-    gendcseparator = ['gendcseparator']
+    gendcseparator = ['gendcseparator', 'name=sep']
     
     if not num_output:
         filesink = ['filesink', 'location={0}/descriptor.bin'.format(output_dir)]
     else:
         filesink = concat_plugins(['queue'], ['filesink', 'location={0}/descriptor.bin'.format(output_dir)])
         for i in range(0, num_output):
-            pipeline_part = concat_plugins(['gendcseparator0.'], ['queue'], ['filesink', 'location={0}/output{1}.bin'.format(output_dir, i)])
+            pipeline_part = concat_plugins(['sep.component_src{0}'.format(i)], ['queue', 'max-size-buffers=1000'], ['filesink', 'location={0}/output{1}.bin'.format(output_dir, i)])
             filesink += pipeline_part
 
     return concat_plugins(cmd, gendcseparator, filesink)

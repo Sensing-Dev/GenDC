@@ -158,7 +158,7 @@ gst_gendc_separator_init (GstGenDCSeparator * filter)
   filter->framecount = 0;
   filter->silent = TRUE;
   filter->head = TRUE;
-  filter->fistrun = TRUE;
+
 }
 
 static void
@@ -236,7 +236,7 @@ _is_gendc (GstMapInfo map, GstGenDCSeparator* filter){
 }
 
 void
-_get_valid_component_offset(GstMapInfo map, GstGenDCSeparator* filter){
+_get_valid_component_offset(GstMapInfo map, GstGenDCSeparator* filter, GstBuffer * buf){
   guint32 component_count = *((guint32 *)(map.data + COMPONENT_COUNT_OFFSET));
   for (guint i=0; i < component_count; ++i){
     guint64 ith_component_offset = *((guint64 *)(map.data + COMPONENT_OFFSET_OFFSET + sizeof(guint64) * i));
@@ -255,6 +255,23 @@ _get_valid_component_offset(GstMapInfo map, GstGenDCSeparator* filter){
       this_component->is_available_component = g_list_length(filter->component_info) == 0 ? TRUE : FALSE; 
 
       filter->component_info = g_list_append(filter->component_info, this_component);
+
+      gchar* pad_name = g_strdup_printf("component_src%u", i); 
+      GstPad* comp_pad = gst_gendc_separator_init_component_src_pad(filter, pad_name);
+      // gst_pad_push_data:<gendcseparator0:component_src0> Got data flow before stream-start event
+      GstEvent *event = gst_event_new_stream_start (pad_name);
+      gst_pad_push_event (comp_pad, gst_event_ref (event));
+      
+      // gst_pad_push_data:<gendcseparator0:component_src0> Got data flow before segment event
+      GstSegment segment;
+      GstClockTime start_time = GST_BUFFER_PTS(buf);
+      GstClockTime duration = GST_BUFFER_DURATION(buf);
+      gst_segment_init(&segment, GST_FORMAT_TIME);
+      segment.start = start_time;
+      segment.duration = duration;
+      segment.flags = GST_SEGMENT_FLAG_NONE;
+      GstEvent *segment_event = gst_event_new_segment(&segment);
+      gst_pad_push_event(comp_pad, segment_event);
 
       if (this_component->is_available_component){
         GList* current_cmp_info = filter->component_info;
@@ -318,7 +335,7 @@ gst_gendc_separator_chain (GstPad * pad, GstObject * parent, GstBuffer * buf)
     filter->isGenDC = TRUE;
     filter->isDescriptor = TRUE;
 
-    _get_valid_component_offset(map, filter); 
+    _get_valid_component_offset(map, filter, buf); 
 
     // get descriptor
     GstBuffer *descriptor_buf = _generate_descriptor_buffer(map, filter);
@@ -343,24 +360,6 @@ gst_gendc_separator_chain (GstPad * pad, GstObject * parent, GstBuffer * buf)
     gchar* pad_name = g_strdup_printf("component_src%u", target_cmp_index); 
     GstPad* comp_pad = gst_gendc_separator_init_component_src_pad(filter, pad_name);
  
-    if (filter->fistrun){
-      // gst_pad_push_data:<gendcseparator0:component_src0> Got data flow before stream-start event
-      GstEvent *event = gst_event_new_stream_start (pad_name);
-      gst_pad_push_event (comp_pad, gst_event_ref (event));
-      
-      // gst_pad_push_data:<gendcseparator0:component_src0> Got data flow before segment event
-      GstSegment segment;
-      GstClockTime start_time = GST_BUFFER_PTS(buf);
-      GstClockTime duration = GST_BUFFER_DURATION(buf);
-      gst_segment_init(&segment, GST_FORMAT_TIME);
-      segment.start = start_time;
-      segment.duration = duration;
-      segment.flags = GST_SEGMENT_FLAG_NONE;
-      GstEvent *segment_event = gst_event_new_segment(&segment);
-      gst_pad_push_event(comp_pad, segment_event);
-
-      filter->fistrun = FALSE;
-    }
     g_free(pad_name);
 
     if (map.size < info->dataoffset + info->datasize){
@@ -373,6 +372,7 @@ gst_gendc_separator_chain (GstPad * pad, GstObject * parent, GstBuffer * buf)
       info->datasize -= size_of_copy;
 
       filter->head = FALSE;
+
       break; 
     }else if (map.size > info->dataoffset + info->datasize){
       guint32 size_of_copy = info->dataoffset + info->datasize;
@@ -385,9 +385,8 @@ gst_gendc_separator_chain (GstPad * pad, GstObject * parent, GstBuffer * buf)
       current_cmp_info = current_cmp_info->next;
       if (current_cmp_info){
         info = (struct _ComponentInfo *)current_cmp_info->data;
-        info->is_available_component = TRUE;;
+        info->is_available_component = TRUE;
         info->dataoffset = info->dataoffset - filter->accum_cursor;
-        filter->fistrun = TRUE;
       }
       g_list_remove (filter->component_info, old_ptr);
     }else{
