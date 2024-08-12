@@ -249,7 +249,6 @@ _get_valid_component_offset(GstMapInfo map, GstGenDCSeparator* filter, GstBuffer
       struct _ComponentInfo *this_component = g_new(struct _ComponentInfo, 1);
       this_component->ith_valid_component = i;
       this_component->partcount = *((guint16 *)(map.data + ith_component_offset + 46));
-      g_print("%u\n", this_component->partcount);
       this_component->partinfo = NULL;
       this_component->current_prt_info = NULL;
 
@@ -258,7 +257,6 @@ _get_valid_component_offset(GstMapInfo map, GstGenDCSeparator* filter, GstBuffer
         gint jth_partoffset = *((guint64 *)(map.data + ith_component_offset+ 48 + 8 * pc));
         jth_part->dataoffset = *((guint64 *)(map.data + jth_partoffset+ 32));
         jth_part->datasize = *((guint64 *)(map.data + jth_partoffset+ 24));
-        g_print("[set] %dth Part dataoffset=%llu datasize=%llu\n", pc, jth_part->dataoffset, jth_part->datasize);
         this_component->partinfo = g_list_append(this_component->partinfo, jth_part);
       }
 
@@ -274,7 +272,6 @@ _get_valid_component_offset(GstMapInfo map, GstGenDCSeparator* filter, GstBuffer
       }
 
       gchar* pad_name = g_strdup_printf("component_src%u", i); 
-      g_print("[set] pad %s is set\n", pad_name);
       GstPad* comp_pad = gst_gendc_separator_init_component_src_pad(filter, pad_name);
       // gst_pad_push_data:<gendcseparator0:component_src0> Got data flow before stream-start event
       GstEvent *event = gst_event_new_stream_start (pad_name);
@@ -292,7 +289,6 @@ _get_valid_component_offset(GstMapInfo map, GstGenDCSeparator* filter, GstBuffer
       gst_pad_push_event(comp_pad, segment_event);
     }
   }
-  // return filter->num_valid_component;
 }
 
 
@@ -361,9 +357,7 @@ gst_gendc_separator_chain (GstPad * pad, GstObject * parent, GstBuffer * buf)
     while (info->current_prt_info){
       if (map.size < jth_part_info->dataoffset + jth_part_info->datasize){
         guint32 size_of_copy = map.size - jth_part_info->dataoffset;
-        g_print("[IF   DEBUG at Comp %d] map.size=%llu, jth_part_info->dataoffset=%llu, jth_part_info->datasize=%llu\n", info->ith_comp_index, map.size, jth_part_info->dataoffset, jth_part_info->datasize);
-        g_print("                        size_of_copy=%llu\n", size_of_copy);
-        
+
         GstBuffer *this_comp_buffer = gst_buffer_new_allocate (NULL, size_of_copy, NULL);
         gst_buffer_fill (this_comp_buffer, 0, map.data + jth_part_info->dataoffset, size_of_copy);
         gst_pad_push (comp_pad, this_comp_buffer);
@@ -378,8 +372,6 @@ gst_gendc_separator_chain (GstPad * pad, GstObject * parent, GstBuffer * buf)
 
       }else{
         guint32 size_of_copy = jth_part_info->datasize;
-        g_print("[ELSE DEBUG at Comp %d] map.size=%llu, jth_part_info->dataoffset=%llu, jth_part_info->datasize=%llu\n", info->ith_comp_index, map.size, jth_part_info->dataoffset, jth_part_info->datasize);
-        g_print("                        size_of_copy=%llu\n", size_of_copy);
 
         GstBuffer *this_comp_buffer = gst_buffer_new_allocate (NULL, size_of_copy, NULL);
         gst_buffer_fill (this_comp_buffer, 0, map.data + jth_part_info->dataoffset, size_of_copy);
@@ -396,7 +388,6 @@ gst_gendc_separator_chain (GstPad * pad, GstObject * parent, GstBuffer * buf)
 
       }
     }
-    g_print("break\n");
 
     filter->current_cmp_info = filter->current_cmp_info->next;
     if (filter->current_cmp_info){

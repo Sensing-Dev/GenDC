@@ -134,7 +134,7 @@ if __name__ == "__main__":
                     part = comp1.get_part_by_index(part_index)
                     part_data = part.get_data() 
                     part_data_size =part.get_data_size()
-                    content.append(filecontent[cursor:cursor + part_data_size] == part_data[cursor:cursor + part_data_size])
+                    content.append(filecontent[cursor:cursor + part_data_size] == part_data)
 
                     cursor += part_data_size
 
@@ -143,6 +143,7 @@ if __name__ == "__main__":
                 
                 for part_index in range(comp1.get_part_count()):
                     test_ret('Comp{} Part{}'.format(n, part_index), content[part_index], 'Wrong file content')
+
                 
 
 
