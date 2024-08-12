@@ -32,13 +32,20 @@ def generate_command(input_bin, output_dir, num_output=None):
     else:
         filesink = concat_plugins(['queue'], ['filesink', 'location={0}/descriptor.bin'.format(output_dir)])
         for i in range(0, num_output):
-            pipeline_part = concat_plugins(['sep.component_src{0}'.format(i)], ['queue', 'max-size-buffers=1000'], ['filesink', 'location={0}/output{1}.bin'.format(output_dir, i)])
+            pipeline_part = concat_plugins(['sep.component_src{0}'.format(i)], ['queue', 'max-size-buffers=1000'], ['filesink', 'location={0}/component{1}.bin'.format(output_dir, i)])
             filesink += pipeline_part
 
     return concat_plugins(cmd, gendcseparator, filesink)
 
 def disp_msg(msg, flag = 'info'):
     print('[{0:5}]'.format(flag), msg)
+
+def test_ret(item, ret, err=''):
+    if ret:
+        msg = '{:15}{:<13}'.format(item, 'PASSED')
+    else:
+        msg = '{:15}{:>13}::{}'.format(item, 'FAILED', err)
+    disp_msg(msg, 'TEST')
 
 def generate_dummpy_image(wh):
     w = wh[0]
@@ -94,40 +101,49 @@ if __name__ == "__main__":
                 stderr = ret.stderr.decode('UTF-8').split('\r\n')
                 for l in stderr:
                     print(l)
-    
-    with open('{0}/descriptor.bin'.format(output_dir), mode='rb') as ifs:
-        filecontent = ifs.read()
-        try:
-            gendc_container = gendc.Container(filecontent)
-            descriptor_size = gendc_container.get_descriptor_size()
-            container_data_size = gendc_container.get_data_size()
-            disp_msg('Valid gendc descriptor')
-        except :
-            disp_msg('Wrong descriptor'.format(input_bin), 'error')
-            exit(1)
 
-    # check component 0 (image)
-    if num_component > 0:
-        filename = '{0}/output{1}.bin'.format(output_dir, 0)
-        expected_image = generate_dummpy_image([1920, 1080])
+    # check split files
+    original_binary = open(input_bin, mode='rb').read()
+    original_gendc_container = gendc.Container(original_binary)
+
+    # check descriptor
+    with open('{0}/descriptor.bin'.format(output_dir), mode='rb') as ifs:
+        original_desctiptor_size = original_gendc_container.get_descriptor_size()
+        filecontent = ifs.read()
+        if len(filecontent) == original_desctiptor_size:
+            if filecontent == original_binary[:original_desctiptor_size]:
+                test_ret('Descriptor', True)
+            else:
+                test_ret('Descriptor', False)
+        else:
+            test_ret('Descriptor', False)
+
+    for n in range(num_component):
+
+        filename = '{0}/component{1}.bin'.format(output_dir, n)
+
         with open(filename, mode='rb') as ifs:
             filecontent = ifs.read()
-            try:
-                reshaped_data = np.frombuffer(filecontent, np.uint8).reshape([1080, 1920])
-                if np.array_equal(reshaped_data, expected_image):
-                    print("OK", filename, "is a valid image file")
-                else:
-                    disp_msg('{0} is a invalid image file'.format(filename), 'error')
-                    exit(1)
-            except Exception as err:
-                disp_msg('{0} is a invalid image file'.format(filename), 'error')
-                if len(filecontent) != 1080 * 1920:
-                    disp_msg('DIFF {0}'.format(len(filecontent)-1080 * 1920), 'error')
-                    disp_msg('{0} file size is {1}'.format(filename, len(filecontent)), 'error')
-                    disp_msg('expected size is {0}'.format(1080 * 1920), 'error')
-                print(4096-2304)
-                print(err)
-                exit(1)
+            cursor = 0
+
+            content = []
+
+            comp1 = original_gendc_container.get_component_by_index(n)
+            for part_index in range(comp1.get_part_count()):
+                part = comp1.get_part_by_index(part_index)
+                part_data = part.get_data() 
+                part_data_size =part.get_data_size()
+                content.append(filecontent[cursor:cursor + part_data_size] == part_data[cursor:cursor + part_data_size])
+
+                cursor += part_data_size
+
+            if cursor != len(filecontent):
+                test_ret('Comp{}'.format(n, part_index), False, 'Wrong file size (expected, actual)=({}, {})'.format(cursor, len(filecontent)))
+            
+            for part_index in range(comp1.get_part_count()):
+                test_ret('Comp{} Part{}'.format(n, part_index), content[part_index], 'Wrong file content')
+            
+
 
 
             
