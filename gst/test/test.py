@@ -118,32 +118,33 @@ if __name__ == "__main__":
         else:
             test_ret('Descriptor', False)
 
-    for n in range(num_component):
+    if num_component:
+        for n in range(num_component):
 
-        filename = '{0}/component{1}.bin'.format(output_dir, n)
+            filename = '{0}/component{1}.bin'.format(output_dir, n)
 
-        with open(filename, mode='rb') as ifs:
-            filecontent = ifs.read()
-            cursor = 0
+            with open(filename, mode='rb') as ifs:
+                filecontent = ifs.read()
+                cursor = 0
 
-            content = []
+                content = []
 
-            comp1 = original_gendc_container.get_component_by_index(n)
-            for part_index in range(comp1.get_part_count()):
-                part = comp1.get_part_by_index(part_index)
-                part_data = part.get_data() 
-                part_data_size =part.get_data_size()
-                content.append(filecontent[cursor:cursor + part_data_size] == part_data[cursor:cursor + part_data_size])
+                comp1 = original_gendc_container.get_component_by_index(n)
+                for part_index in range(comp1.get_part_count()):
+                    part = comp1.get_part_by_index(part_index)
+                    part_data = part.get_data() 
+                    part_data_size =part.get_data_size()
+                    content.append(filecontent[cursor:cursor + part_data_size] == part_data[cursor:cursor + part_data_size])
 
-                cursor += part_data_size
+                    cursor += part_data_size
 
-            if cursor != len(filecontent):
-                test_ret('Comp{}'.format(n, part_index), False, 'Wrong file size (expected, actual)=({}, {})'.format(cursor, len(filecontent)))
-            
-            for part_index in range(comp1.get_part_count()):
-                test_ret('Comp{} Part{}'.format(n, part_index), content[part_index], 'Wrong file content')
-            
+                if cursor != len(filecontent):
+                    test_ret('Comp{}'.format(n, part_index), False, 'Wrong file size (expected, actual)=({}, {})'.format(cursor, len(filecontent)))
+                
+                for part_index in range(comp1.get_part_count()):
+                    test_ret('Comp{} Part{}'.format(n, part_index), content[part_index], 'Wrong file content')
+                
 
 
 
-            
+                

@@ -55,12 +55,21 @@ G_BEGIN_DECLS
 G_DECLARE_FINAL_TYPE (GstGenDCSeparator, gst_gendc_separator,
     GST, GENDCSEPARATOR, GstElement)
 
+struct _PartInfo
+{
+  guint64 dataoffset;
+  guint64 datasize;  
+};
+
 struct _ComponentInfo
 {
   guint32 ith_valid_component;
-  guint64 dataoffset;
-  guint64 datasize; 
-  gboolean is_available_component;
+  gint32 ith_comp_index;
+
+  GList* partinfo;
+  GList* current_prt_info;
+
+  guint16 partcount;
 };
 
 
@@ -73,6 +82,7 @@ struct _GstGenDCSeparator
 
   GList *component_src_pads;
   GList * component_info;
+  GList * current_cmp_info;
 
   gboolean isGenDC;
   gboolean isDescriptor;
