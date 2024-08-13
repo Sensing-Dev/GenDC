@@ -1,7 +1,7 @@
 plugin_c_args = ['-DHAVE_CONFIG_H']
 
 cdata = configuration_data()
-cdata.set_quoted('PACKAGE_VERSION', '0.2.8')
+cdata.set_quoted('PACKAGE_VERSION', full_version)
 cdata.set_quoted('PACKAGE', 'gendc-separator')
 cdata.set_quoted('GST_LICENSE', 'MIT')
 cdata.set_quoted('GST_PACKAGE_NAME', 'GenDC Separator')
