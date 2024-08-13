@@ -114,12 +114,13 @@ jobs:
         set PATH=${{ github.workspace }}/gst/vcpkg_installed/x64-windows/tools/gstreamer;%PATH%
         set GST_PLUGIN_PATH=${{ github.workspace }}/install/gendc/lib/gstreamer-1.0;%GST_PLUGIN_PATH%
         set GST_PLUGIN_PATH=${{ github.workspace }}/gst/vcpkg_installed/x64-windows/plugins/gstreamer;%GST_PLUGIN_PATH%
-        if python ${{ github.workspace }}/gst/test/single_frame_test.py -i ${{ github.workspace }}/test/generated_stub/output.bin -o output -n 6; then
-          echo 'PASSED GST single fram test with 6 components'
-        else
-          echo 'FAILED GST single fram test with 6 components'
-          exit 1
-        fi  
+        python ${{ github.workspace }}/gst/test/single_frame_test.py -i ${{ github.workspace }}/test/generated_stub/output.bin -o output -n 6
+        if %errorlevel% equ 0 (
+          echo PASSED GST single frame test with 6 components
+        ) else (
+          echo FAILED GST single frame test with 6 components
+          exit /b 1
+        ) 
 
   build-ubuntu:
     runs-on: ubuntu-latest

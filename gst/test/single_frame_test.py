@@ -2,6 +2,7 @@ from gendc_python.gendc_separator import descriptor as gendc
 import argparse
 import os
 import numpy as np
+import sys
 
 DISPLAY_WARNING = 0
 
