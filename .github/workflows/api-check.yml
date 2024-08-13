@@ -12,8 +12,6 @@ env:
 jobs:
   build-windows:
     runs-on: windows-latest
-    env: 
-      PKG_CONFIG_INSTALL: ${GITHUB_WORKSPACE}
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4.1.1
