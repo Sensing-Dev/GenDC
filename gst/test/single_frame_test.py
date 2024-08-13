@@ -159,7 +159,7 @@ if __name__ == "__main__":
                     test_all_passed &= test_ret('Image', False, 'Wrong content and file size')  
 
     if test_all_passed:
-        sys.exit(1)
+        sys.exit(0)
     else:
         sys.exit(1)
 

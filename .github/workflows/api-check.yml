@@ -111,7 +111,7 @@ jobs:
     - name: Test gst-plugin
       shell: cmd
       run: |
-        set PATH=${{ github.workspace }}/gst/vcpkg_installed/x64-windows/tools/gstreamer;%PATH%
+        set PATH=${{ github.workspace }}/vcpkg_installed/x64-windows/tools/gstreamer;%PATH%
         set GST_PLUGIN_PATH=${{ github.workspace }}/install/gendc/lib/gstreamer-1.0;%GST_PLUGIN_PATH%
         set GST_PLUGIN_PATH=${{ github.workspace }}/gst/vcpkg_installed/x64-windows/plugins/gstreamer;%GST_PLUGIN_PATH%
         python ${{ github.workspace }}/gst/test/single_frame_test.py -i ${{ github.workspace }}/test/generated_stub/output.bin -o output -n 6
