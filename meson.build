@@ -3,10 +3,11 @@ project('gendc', 'c',
   meson_version : '>= 1.1',
   license : 'MIT')
 
-full_version =  run_command('git', 'describe', '--tags', '--abbrev=0').stdout().strip('v')
+full_version =  run_command('git', 'describe', '--tags', '--abbrev=0').stdout().strip().strip('v')
 version_parts = full_version.split('.')
 gendc_api_version = version_parts[0] + '.' + version_parts[1]
 message( 'API version: ' + gendc_api_version )
+message( 'PACKAGE_VERSION: ' + full_version )
 
 header_lib_install_dir = get_option('includedir')
 gst_plugin_dir = get_option('libdir')/'gstreamer-1.0'

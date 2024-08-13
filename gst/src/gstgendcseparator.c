@@ -33,13 +33,6 @@ GST_DEBUG_CATEGORY_STATIC (gst_gendc_separator_debug);
 
 #define GST_GENDC_SRPARATOR_DEBUG 1
 
-void debug_msg(const gchar* format){
-  if (GST_GENDC_SRPARATOR_DEBUG){
-    g_print(format);
-    g_print("\n");
-  }
-}
-
 /* Filter signals and args */
 enum
 {
@@ -75,8 +68,6 @@ static GstStaticPadTemplate component_src_factory = GST_STATIC_PAD_TEMPLATE ("co
     GST_PAD_SOMETIMES,
     GST_STATIC_CAPS ("ANY")
     );
-
-static gint num_acrual_src_component_pad = 0;
 
 #define gst_gendc_separator_parent_class parent_class
 G_DEFINE_TYPE (GstGenDCSeparator, gst_gendc_separator, GST_TYPE_ELEMENT);
@@ -244,8 +235,6 @@ _get_valid_component_offset(GstMapInfo map, GstGenDCSeparator* filter, GstBuffer
     if (ith_component_flag & 0x0001){
       // invalid component
     }else{
-      guint64 partoffset = *((guint64 *)(map.data + ith_component_offset+ 48));
-
       struct _ComponentInfo *this_component = g_new(struct _ComponentInfo, 1);
       this_component->ith_valid_component = i;
       this_component->partcount = *((guint16 *)(map.data + ith_component_offset + 46));
@@ -375,7 +364,7 @@ gst_gendc_separator_chain (GstPad * pad, GstObject * parent, GstBuffer * buf)
 
         GstBuffer *this_comp_buffer = gst_buffer_new_allocate (NULL, size_of_copy, NULL);
         gst_buffer_fill (this_comp_buffer, 0, map.data + jth_part_info->dataoffset, size_of_copy);
-        GstFlowReturn ret = gst_pad_push (comp_pad, this_comp_buffer);
+        gst_pad_push (comp_pad, this_comp_buffer);
 
         // shift to the next part
         info->current_prt_info = info->current_prt_info->next;
