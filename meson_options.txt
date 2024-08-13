@@ -1,0 +1,3 @@
+# Features
+option('gst-plugin', type: 'feature', value: 'disabled', description : 'Build GStreamer plugin')
+
