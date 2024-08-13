@@ -42,6 +42,7 @@ def test_ret(item, ret, err=''):
     else:
         msg = '{:15}{:>13}::{}'.format(item, 'FAILED', err)
     disp_msg(msg, 'TEST')
+    return ret
 
 def generate_dummpy_image(wh):
     w = wh[0]
@@ -65,6 +66,8 @@ if __name__ == "__main__":
     output_dir = parser.parse_args().output
     num_component = parser.parse_args().num_component
     os.makedirs(output_dir, exist_ok=True)
+
+    test_all_passed = True
 
     if not (os.path.isfile(input_bin)):
         raise Exception("Bin file " + input_bin + " does not exist")
@@ -109,11 +112,11 @@ if __name__ == "__main__":
             filecontent = ifs.read()
             if len(filecontent) == original_desctiptor_size:
                 if filecontent == original_binary[:original_desctiptor_size]:
-                    test_ret('Descriptor', True)
+                    test_all_passed &= test_ret('Descriptor', True)
                 else:
-                    test_ret('Descriptor', False)
+                    test_all_passed &= test_ret('Descriptor', False)
             else:
-                test_ret('Descriptor', False)
+                test_all_passed &= test_ret('Descriptor', False)
 
         if num_component:
             for n in range(num_component):
@@ -136,23 +139,28 @@ if __name__ == "__main__":
                         cursor += part_data_size
 
                     if cursor != len(filecontent):
-                        test_ret('Comp{}'.format(n, part_index), False, 'Wrong file size (expected, actual)=({}, {})'.format(cursor, len(filecontent)))
+                        test_all_passed &= test_ret('Comp{}'.format(n, part_index), False, 'Wrong file size (expected, actual)=({}, {})'.format(cursor, len(filecontent)))
                     
                     for part_index in range(comp1.get_part_count()):
-                        test_ret('Comp{} Part{}'.format(n, part_index), content[part_index], 'Wrong file content')
+                        test_all_passed &= test_ret('Comp{} Part{}'.format(n, part_index), content[part_index], 'Wrong file content')
     except:
         with open('{0}/descriptor.bin'.format(output_dir), mode='rb') as ifs:
             filecontent = ifs.read()
             if len(original_binary)==len(filecontent):
                 if original_binary == filecontent:
-                    test_ret('Image', True)
+                    test_all_passed &= test_ret('Image', True)
                 else:
-                    test_ret('Image', False, 'Wrong content')
+                    test_all_passed &= test_ret('Image', False, 'Wrong content')
             else:
                 if original_binary == filecontent:
-                    test_ret('Image', False, 'Wrong file size')
+                    test_all_passed &= test_ret('Image', False, 'Wrong file size')
                 else:
-                    test_ret('Image', False, 'Wrong content and file size')    
+                    test_all_passed &= test_ret('Image', False, 'Wrong content and file size')  
+
+    if test_all_passed:
+        sys.exit(1)
+    else:
+        sys.exit(1)
 
                 
 
