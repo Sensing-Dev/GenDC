@@ -75,7 +75,7 @@ jobs:
       shell: cmd
       run: |
         dir
-        vcpkg.exe install --x-install-root ${{ github.workspace }}\vcpkg_installed --x-manifest-root ${{ github.workspace }}
+        vcpkg.exe install --x-install-root ${{ github.workspace }}\vcpkg_installed --x-manifest-root ${{ github.workspace }}\gst
 
     - name: Cache dependencies
       if: steps.cache_status.outputs.cache-hit != 'true'
