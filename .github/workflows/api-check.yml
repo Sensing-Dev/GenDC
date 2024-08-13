@@ -104,6 +104,10 @@ jobs:
         cd ${{ github.workspace }}/build
         meson install
 
+    - name: Setup modules for gst-test
+      run: |
+        pip install gendc-python numpy
+
     - name: Test gst-plugin
       shell: cmd
       run: |
@@ -136,13 +140,13 @@ jobs:
       run: |
         cd build
         ninja install
-    - name: Setup gendc-python
+    - name: Setup modules for gst-test
       run: |
-        pip install gendc-python
+        pip install gendc-python numpy
     - name: Test gst-plugin
       run: |
         export GST_PLUGIN_PATH=${{ github.workspace }}/install/gendc/lib/x86_64-linux-gnu/gstreamer-1.0:$GST_PLUGIN_PATH
-        if python ${{ github.workspace }}/gst/test/single_frame_test.py -i ${{ github.workspace }}/test/generated_stub/output.bin -o output -n 6; then
+        if python3 ${{ github.workspace }}/gst/test/single_frame_test.py -i ${{ github.workspace }}/test/generated_stub/output.bin -o output -n 6; then
           echo 'PASSED GST single fram test with 6 components'
         else
           echo 'FAILED GST single fram test with 6 components'
