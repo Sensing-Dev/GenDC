@@ -28,8 +28,8 @@ def generate_command(input_bin, output_dir, num_output=None):
     output_dir_path = Path(output_dir)
 
     if is_windows:
-        input_bin_str = input_bin_path.as_posix().replace('/', '\\\\')
-        output_dir_str = output_dir_path.as_posix().replace('/', '\\\\')
+        input_bin_str = input_bin_path.as_posix().replace('/', '//')
+        output_dir_str = output_dir_path.as_posix().replace('/', '//')
     else:
         input_bin_str = input_bin_path.as_posix()
         output_dir_str = output_dir_path.as_posix()
@@ -42,7 +42,11 @@ def generate_command(input_bin, output_dir, num_output=None):
     else:
         filesink = concat_plugins(['queue'], ['filesink', f'location={output_dir_str}/descriptor.bin'])
         for i in range(0, num_output):
-            pipeline_part = concat_plugins([f'sep.component_src{i}'], ['queue', 'max-size-buffers=1000'], ['filesink', f'location={output_dir_str}/component{i}.bin'])
+            if is_windows:
+                output_bin_str = Path(os.path.join(output_dir_str, f'component{i}.bin')).as_posix().replace('/', '//')
+            else:
+                output_bin_str = Path(os.path.join(output_dir_str, f'component{i}.bin')).as_posix()
+            pipeline_part = concat_plugins([f'sep.component_src{i}'], ['queue', 'max-size-buffers=1000'], ['filesink', f'location={output_bin_str}'])
             filesink += pipeline_part
 
     return concat_plugins(cmd, gendcseparator, filesink)
@@ -91,7 +95,7 @@ if __name__ == "__main__":
     disp_msg('Input: {0}'.format(input_bin), 'info')
     disp_msg('Output: {0}'.format(output_dir), 'info')
 
-    command  = generate_command(Path(input_bin), output_dir, num_component)
+    command  = generate_command(input_bin, output_dir, num_component)
 
 
     disp_msg('Command: {0}'.format(' '.join(command)), 'info')
