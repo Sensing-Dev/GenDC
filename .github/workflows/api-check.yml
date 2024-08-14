@@ -109,7 +109,6 @@ jobs:
         pip install gendc-python numpy
 
     - name: Test gst-plugin
-      shell: cmd
       run: |
         set PATH=${{ github.workspace }}/vcpkg_installed/x64-windows/tools/gstreamer;%PATH%
         set GST_PLUGIN_PATH=${{ github.workspace }}/install/gendc/lib/gstreamer-1.0;%GST_PLUGIN_PATH%
