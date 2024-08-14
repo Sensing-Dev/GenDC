@@ -3,6 +3,7 @@ import argparse
 import os
 import numpy as np
 import sys
+from pathlib import Path
 
 DISPLAY_WARNING = 0
 
@@ -21,15 +22,27 @@ def concat_plugins(*args):
     return ret
 
 def generate_command(input_bin, output_dir, num_output=None):
-    cmd = [GST_LAUNCH, 'filesrc', 'location={0}'.format(input_bin)]
+
+    is_windows = sys.platform.startswith('win')
+    input_bin_path = Path(input_bin)
+    output_dir_path = Path(output_dir)
+
+    if is_windows:
+        input_bin_str = input_bin_path.as_posix().replace('/', '\\\\')
+        output_dir_str = output_dir_path.as_posix().replace('/', '\\\\')
+    else:
+        input_bin_str = input_bin_path.as_posix()
+        output_dir_str = output_dir_path.as_posix()
+
+    cmd = [GST_LAUNCH, 'filesrc', f'location={input_bin_str}']
     gendcseparator = ['gendcseparator', 'name=sep']
     
     if not num_output:
-        filesink = ['filesink', 'location={0}/descriptor.bin'.format(output_dir)]
+        filesink = ['filesink', f'location={output_dir_str}/descriptor.bin']
     else:
-        filesink = concat_plugins(['queue'], ['filesink', 'location={0}/descriptor.bin'.format(output_dir)])
+        filesink = concat_plugins(['queue'], ['filesink', f'location={output_dir_str}/descriptor.bin'])
         for i in range(0, num_output):
-            pipeline_part = concat_plugins(['sep.component_src{0}'.format(i)], ['queue', 'max-size-buffers=1000'], ['filesink', 'location={0}/component{1}.bin'.format(output_dir, i)])
+            pipeline_part = concat_plugins([f'sep.component_src{i}'], ['queue', 'max-size-buffers=1000'], ['filesink', f'location={output_dir_str}/component{i}.bin'])
             filesink += pipeline_part
 
     return concat_plugins(cmd, gendcseparator, filesink)
@@ -78,7 +91,7 @@ if __name__ == "__main__":
     disp_msg('Input: {0}'.format(input_bin), 'info')
     disp_msg('Output: {0}'.format(output_dir), 'info')
 
-    command  = generate_command(input_bin, output_dir, num_component)
+    command  = generate_command(Path(input_bin), output_dir, num_component)
 
 
     disp_msg('Command: {0}'.format(' '.join(command)), 'info')
