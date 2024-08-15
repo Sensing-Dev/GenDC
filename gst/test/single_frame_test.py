@@ -104,6 +104,10 @@ if __name__ == "__main__":
 
     if ret.returncode:
         print('Failed')
+        print('=== stderr ===')
+        stderr = ret.stderr.decode('UTF-8').split('\r\n')
+        for l in stderr:
+            print(l)
         exit(1)
     else:
         if IS_WINDOWS:
