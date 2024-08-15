@@ -141,7 +141,73 @@ jobs:
         files: "${{ github.workspace }}/check_archive_content/gendc/LICENSE.txt, ${{ github.workspace }}/check_archive_content/gendc/include/gendc_separator, ${{ github.workspace }}/check_archive_content/gendc/lib/gstreamer-1.0"
         fail: true
 
+    - name: Release-Windows
+      uses: softprops/action-gh-release@v1
+      with:
+          files: |
+              ${{ github.workspace }}/gendc-${{ github.ref_name }}-win64.zip
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  build-and-release-linux:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4.1.1
+      with:
+        fetch-depth: 0
+    - name: Install dependencies
+      run: | 
+        pip3 install meson==1.1.0 ninja
+        sudo apt-get update && sudo apt-get upgrade
+        sudo apt-get install libunwind-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libgstreamer-plugins-bad1.0-dev gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-alsa gstreamer1.0-gl gstreamer1.0-gtk3 gstreamer1.0-qt5 gstreamer1.0-pulseaudio
+    - name: Build gst-plugin
+      run: |
+        meson setup --prefix ${{ github.workspace }}/install/gendc build -Dgst-plugin=enabled
+    - name: Install gst-plugin
+      run: |
+        cd build
+        ninja install
+    - name: Setup modules for gst-test
+      run: |
+        pip install gendc-python numpy
+    - name: Test gst-plugin
+      run: |
+        export GST_PLUGIN_PATH=${{ github.workspace }}/install/gendc/lib/x86_64-linux-gnu/gstreamer-1.0:$GST_PLUGIN_PATH
+        if python3 ${{ github.workspace }}/gst/test/single_frame_test.py -i ${{ github.workspace }}/test/generated_stub/output.bin -o output -n 6; then
+          echo 'PASSED GST single fram test with 6 components'
+        else
+          echo 'FAILED GST single fram test with 6 components'
+          exit 1
+        fi  
+
+    - name: Create tar archive
+      run: |
+        cp ${{ github.workspace }}/LICENSE.txt ${{ github.workspace }}/install/gendc
+        cd ${{ github.workspace }}/install
+        tar -czvf ${{ github.workspace }}/gendc-${{ github.ref_name }}-linux.tar.gz ./gendc/*
+
+    - name: Extract archive content test
+      run: |
+        mkdir check_archive_content
+        cd check_archive_content
+        tar -xvf ${{ github.workspace }}/gendc-${{ github.ref_name }}-linux.tar.gz  
+
+    - name: Check if archive content exists
+      id: check_package_ubuntu
+      uses: andstor/file-existence-action@v3
+      with:
+        files: "${{ github.workspace }}/check_archive_content/gendc/LICENSE.txt, ${{ github.workspace }}/check_archive_content/gendc/include/gendc_separator, ${{ github.workspace }}/check_archive_content/gendc/lib/x86_64-linux-gnu/gstreamer-1.0/"
+        fail: true
+
+    - name: Release-Linux
+      uses: softprops/action-gh-release@v1
+      with:
+          files: |
+              ${{ github.workspace }}/gendc-${{ github.ref_name }}-linux.tar.gz
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
   release-job:
     runs-on: ubuntu-latest
     
