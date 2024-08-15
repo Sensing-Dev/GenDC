@@ -124,16 +124,16 @@ jobs:
     - name: Create zip archive
       run: |
         Copy-Item ${{ github.workspace }}\LICENSE.txt ${{ github.workspace }}/install/gendc
-        Compress-Archive -Path ${{ github.workspace }}/install/gendc -DestinationPath "${{ github.workspace }}/gendc_${{ github.ref_name }}_win64.zip"
+        Compress-Archive -Path ${{ github.workspace }}/install/gendc -DestinationPath ${{ github.workspace }}/gendc_win64.zip
 
     - name: Extract archive content test
       run: |
         New-Item -Path ${{ github.workspace }} -Name "check_archive_content" -ItemType "directory"
         cd ${{ github.workspace }}\check_archive_content
-        Expand-Archive -Path ${{ github.workspace }}/gendc_${{ github.ref_name }}_win64.zip -DestinationPath .  
+        Expand-Archive -Path ${{ github.workspace }}/gendc_win64.zip -DestinationPath .  
 
     - name: Check if archive content exists
-      id: check_package
+      id: check_package_windows
       uses: andstor/file-existence-action@v3
       with:
         files: "${{ github.workspace }}/check_archive_content/gendc/LICENSE.txt, ${{ github.workspace }}/check_archive_content/gendc/include/gendc_separator, ${{ github.workspace }}/check_archive_content/gendc/lib/gstreamer-1.0"
@@ -170,6 +170,25 @@ jobs:
           echo 'FAILED GST single fram test with 6 components'
           exit 1
         fi  
+
+    - name: Create tar archive
+      run: |
+        cp ${{ github.workspace }}/LICENSE.txt ${{ github.workspace }}/install/gendc
+        cd ${{ github.workspace }}
+        tar -czvf ${{ github.workspace }}/gendc-linux.tar.gz ./gendc/*
+
+    - name: Extract archive content test
+      run: |
+        mkdir check_archive_content
+        cd check_archive_content
+        tar -xvf ${{ github.workspace }}/gendc-linux.tar.gz  
+
+    - name: Check if archive content exists
+      id: check_package_ubuntu
+      uses: andstor/file-existence-action@v3
+      with:
+        files: "${{ github.workspace }}/check_archive_content/gendc/LICENSE.txt, ${{ github.workspace }}/check_archive_content/gendc/include/gendc_separator, ${{ github.workspace }}/check_archive_content/gendc/lib/gstreamer-1.0"
+        fail: true
 
   test:
     runs-on: ubuntu-latest
