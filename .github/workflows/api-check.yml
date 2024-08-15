@@ -174,14 +174,14 @@ jobs:
     - name: Create tar archive
       run: |
         cp ${{ github.workspace }}/LICENSE.txt ${{ github.workspace }}/install/gendc
-        cd ${{ github.workspace }}
+        cd ${{ github.workspace }}/install
         tar -czvf ${{ github.workspace }}/gendc-linux.tar.gz ./gendc/*
 
     - name: Extract archive content test
       run: |
         mkdir check_archive_content
         cd check_archive_content
-        tar -xvf ${{ github.workspace }}/gendc-linux.tar.gz  
+        tar -xvf ${{ github.workspace }}/install/gendc-linux.tar.gz  
 
     - name: Check if archive content exists
       id: check_package_ubuntu
