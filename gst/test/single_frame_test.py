@@ -29,23 +29,23 @@ def generate_command(input_bin, output_dir, num_output=None):
 
     if is_windows:
         input_bin_str = input_bin_path.as_posix().replace('/', '//')
-        output_dir_str = output_dir_path.as_posix().replace('/', '//')
+        descriptor_bin_str = Path(os.path.join(output_dir_path, f'descriptor.bin')).as_posix().replace('/', '//')
     else:
         input_bin_str = input_bin_path.as_posix()
-        output_dir_str = output_dir_path.as_posix()
+        descriptor_bin_str = Path(os.path.join(output_dir_path, f'descriptor.bin')).as_posix()
 
     cmd = [GST_LAUNCH, 'filesrc', f'location={input_bin_str}']
     gendcseparator = ['gendcseparator', 'name=sep']
     
     if not num_output:
-        filesink = ['filesink', f'location={output_dir_str}/descriptor.bin']
+        filesink = ['filesink', f'location={descriptor_bin_str}']
     else:
-        filesink = concat_plugins(['queue'], ['filesink', f'location={output_dir_str}/descriptor.bin'])
+        filesink = concat_plugins(['queue'], ['filesink', f'location={descriptor_bin_str}'])
         for i in range(0, num_output):
             if is_windows:
-                output_bin_str = Path(os.path.join(output_dir_str, f'component{i}.bin')).as_posix().replace('/', '//')
+                output_bin_str = Path(os.path.join(output_dir_path, f'component{i}.bin')).as_posix().replace('/', '//')
             else:
-                output_bin_str = Path(os.path.join(output_dir_str, f'component{i}.bin')).as_posix()
+                output_bin_str = Path(os.path.join(output_dir_path, f'component{i}.bin')).as_posix()
             pipeline_part = concat_plugins([f'sep.component_src{i}'], ['queue', 'max-size-buffers=1000'], ['filesink', f'location={output_bin_str}'])
             filesink += pipeline_part
 
