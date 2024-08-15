@@ -121,6 +121,24 @@ jobs:
           exit /b 1
         ) 
 
+    - name: Create zip archive
+      run: |
+        Copy-Item ${{ github.workspace }}\LICENSE.txt ${{ github.workspace }}/install/gendc
+        Compress-Archive -Path ${{ github.workspace }}/install/gendc -DestinationPath ${{ github.workspace }}/gendc_${{ github.ref_name }}_win64.zip
+
+    - name: Extract archive content test
+      run: |
+        New-Item -Path ${{ github.workspace }} -Name "check_archive_content" -ItemType "directory"
+        cd ${{ github.workspace }}\check_archive_content
+        Expand-Archive -Path ${{ github.workspace }}/gendc_${{ github.ref_name }}_win64.zip -DestinationPath .  
+
+    - name: Check if archive content exists
+      id: check_package
+      uses: andstor/file-existence-action@v3
+      with:
+        files: "${{ github.workspace }}/check_archive_content/gendc/LICENSE.txt, ${{ github.workspace }}/check_archive_content/gendc/include/gendc_separator, ${{ github.workspace }}/check_archive_content/gendc/lib/gstreamer-1.0"
+        fail: true
+
   build-ubuntu:
     runs-on: ubuntu-latest
     steps:
