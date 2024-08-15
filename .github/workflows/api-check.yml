@@ -124,13 +124,13 @@ jobs:
     - name: Create zip archive
       run: |
         Copy-Item ${{ github.workspace }}\LICENSE.txt ${{ github.workspace }}/install/gendc
-        Compress-Archive -Path ${{ github.workspace }}/install/gendc -DestinationPath ${{ github.workspace }}/gendc_win64.zip
+        Compress-Archive -Path ${{ github.workspace }}/install/gendc -DestinationPath ${{ github.workspace }}/gendc-win64.zip
 
     - name: Extract archive content test
       run: |
         New-Item -Path ${{ github.workspace }} -Name "check_archive_content" -ItemType "directory"
         cd ${{ github.workspace }}\check_archive_content
-        Expand-Archive -Path ${{ github.workspace }}/gendc_win64.zip -DestinationPath .  
+        Expand-Archive -Path ${{ github.workspace }}/gendc-win64.zip -DestinationPath .  
 
     - name: Check if archive content exists
       id: check_package_windows
@@ -181,7 +181,7 @@ jobs:
       run: |
         mkdir check_archive_content
         cd check_archive_content
-        tar -xvf ${{ github.workspace }}/install/gendc-linux.tar.gz  
+        tar -xvf ${{ github.workspace }}/gendc-linux.tar.gz  
 
     - name: Check if archive content exists
       id: check_package_ubuntu
