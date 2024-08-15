@@ -4,14 +4,13 @@ on:
     branches:
       - main
 
-env:
-  PKG_CONFIG_INSTALL: C:\pkg-config
-  PKG_CONFIG_VERSION: 0.28-1
-  NINJA_INSTALL: C:\ninja
-
 jobs:
   build-windows:
     runs-on: windows-latest
+    env:
+      PKG_CONFIG_INSTALL: C:\pkg-config
+      PKG_CONFIG_VERSION: 0.28-1
+      NINJA_INSTALL: C:\ninja
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4.1.1
