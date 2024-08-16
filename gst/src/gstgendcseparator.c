@@ -335,17 +335,17 @@ gst_gendc_separator_chain (GstPad * pad, GstObject * parent, GstBuffer * buf)
   }
 
   struct _ComponentInfo *info = NULL;
-  struct _PartInfo *jth_part_info = NULL;
+
   while(filter->current_cmp_info){
-     info = (struct _ComponentInfo *)  filter->current_cmp_info->data;
+    info = (struct _ComponentInfo *)  filter->current_cmp_info->data;
     gchar* pad_name = g_strdup_printf("component_src%u", info->ith_comp_index); 
     GstPad* comp_pad = gst_gendc_separator_init_component_src_pad(filter, pad_name);
     g_free(pad_name);
 
-
-
+    struct _PartInfo *jth_part_info = NULL;
     while (info->current_prt_info){
       jth_part_info = (struct _PartInfo *)  info->current_prt_info->data;
+      jth_part_info->dataoffset = jth_part_info->dataoffset - filter->accum_cursor;
       if (map.size < jth_part_info->dataoffset + jth_part_info->datasize){
         guint32 size_of_copy = map.size - jth_part_info->dataoffset;
 
@@ -381,12 +381,6 @@ gst_gendc_separator_chain (GstPad * pad, GstObject * parent, GstBuffer * buf)
     }
 
     filter->current_cmp_info = filter->current_cmp_info->next;
-//    if (filter->current_cmp_info){
-//      info = (struct _ComponentInfo *)filter->current_cmp_info->data;
-//
-//      jth_part_info = (struct _PartInfo *)  info->current_prt_info->data;
-//      jth_part_info->dataoffset = jth_part_info->dataoffset - filter->accum_cursor;
-//    }
 
   }
   filter->accum_cursor += map.size;
