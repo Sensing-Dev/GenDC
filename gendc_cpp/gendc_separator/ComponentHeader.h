@@ -77,6 +77,9 @@ public:
         return SourceId_;
     }
 
+    int32_t getFormat(){
+        return Format_;
+    }
 
     int16_t getPartCount(){
         return PartCount_;
