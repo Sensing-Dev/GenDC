@@ -1,0 +1,9 @@
+cmake_minimum_required(VERSION 3.3)
+project(SensingDevGenDC)
+
+set(CMAKE_CXX_STANDARD 17)
+
+set(GENDC_SEPARATOR ../gendc_cpp)
+
+include_directories(${GENDC_SEPARATOR}/gendc_separator)
+add_executable(test test.cpp)

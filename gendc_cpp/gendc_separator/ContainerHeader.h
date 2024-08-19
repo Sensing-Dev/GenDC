@@ -77,11 +77,11 @@ public:
         return DescriptorSize_;
     }
 
-    int32_t getContainerSize(){
+    int64_t getContainerSize(){
         return DescriptorSize_ + DataSize_;
     }
 
-    int32_t getDataSize(){
+    int64_t getDataSize(){
         return DataSize_;
     }
 
