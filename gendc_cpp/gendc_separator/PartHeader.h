@@ -157,7 +157,7 @@ public:
     }
 
     int32_t getOffsetofTypeSpecific(int32_t kth_typespecific, int32_t typespecific_offset = 0){
-        return offset_ +  DEFAULT_PART_HEADER_SIZE + 8 * (kth_typespecific - 1) + typespecific_offset;
+        return static_cast<int32_t>(offset_) +  DEFAULT_PART_HEADER_SIZE + 8 * (kth_typespecific - 1) + typespecific_offset;
     }
 
     int64_t getTypeSpecificByIndex(int32_t kth_typespecific ){
@@ -235,7 +235,7 @@ private:
 
 
     int32_t num_typespecific_;
-    int32_t offset_ = 0; // currently part header offset
+    size_t offset_ = 0; // currently part header offset
     char * part_;
 };
 // }

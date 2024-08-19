@@ -26,7 +26,19 @@ const int64_t DATASIZE[9] = {2073600, 3200, 32, 32, 32, 96, 0, 0, 0};
 const int32_t FORMAT[9] = {Mono8, Data16, Data16, Data16, Data16, Data16, Data8, Data8, Data8};
 const std::string DIMENSION[9] = {"1920x1080", "800", "16", "16", "16", "16", "0", "0", "0"};
 
+#ifdef _WIN32
+
+#include <Windows.h>
+#include <stdio.h>
+#include <filesystem>
+#define PATH_MAX 4096
+
+#else
+
 #include <unistd.h>
+
+#endif
+
 #include <iostream>
 #include <string>
 #include <limits.h>
@@ -39,6 +51,20 @@ const std::string DIMENSION[9] = {"1920x1080", "800", "16", "16", "16", "16", "0
 #include <iomanip>
 
 std::string GetExecutableDir() {
+#ifdef _WIN32
+    char exePath[MAX_PATH];
+    GetModuleFileNameA(NULL, exePath, PATH_MAX);
+
+    if (exePath){
+        std::string str(exePath);
+        std::filesystem::path path(str);
+        // Note: assume it is built under build directory i.e. test\\build\\Release\\test.exe
+        std::filesystem::path release_dir = path.parent_path();
+        std::filesystem::path test_dir = release_dir.parent_path().parent_path();
+        return test_dir.string();
+    }
+    return "";
+#else
     char path[PATH_MAX];
     ssize_t len = readlink("/proc/self/exe", path, sizeof(path) - 1);
     if (len != -1) {
@@ -48,6 +74,7 @@ std::string GetExecutableDir() {
         return (std::string::npos == pos) ? "" : executable_path.substr(0, pos);
     }
     return "";
+#endif
 }
 
 template <typename T>
