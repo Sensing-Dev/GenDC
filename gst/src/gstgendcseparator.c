@@ -342,10 +342,9 @@ gst_gendc_separator_chain (GstPad * pad, GstObject * parent, GstBuffer * buf)
     GstPad* comp_pad = gst_gendc_separator_init_component_src_pad(filter, pad_name);
     g_free(pad_name);
 
-    struct _PartInfo *jth_part_info = NULL;
+    struct _PartInfo *jth_part_info = (struct _PartInfo *)  info->current_prt_info->data;
+    jth_part_info->dataoffset = jth_part_info->dataoffset > filter->accum_cursor ? jth_part_info->dataoffset - filter->accum_cursor : 0;
     while (info->current_prt_info){
-      jth_part_info = (struct _PartInfo *)  info->current_prt_info->data;
-      jth_part_info->dataoffset = jth_part_info->dataoffset - filter->accum_cursor;
       if (map.size < jth_part_info->dataoffset + jth_part_info->datasize){
         guint32 size_of_copy = map.size - jth_part_info->dataoffset;
 
@@ -353,12 +352,14 @@ gst_gendc_separator_chain (GstPad * pad, GstObject * parent, GstBuffer * buf)
         gst_buffer_fill (this_comp_buffer, 0, map.data + jth_part_info->dataoffset, size_of_copy);
         gst_pad_push (comp_pad, this_comp_buffer);
 
-        jth_part_info->dataoffset = 0;
+        jth_part_info->dataoffset = jth_part_info->dataoffset > filter->accum_cursor ? jth_part_info->dataoffset - filter->accum_cursor : 0;
         jth_part_info->datasize -= size_of_copy;
 
         filter->head = FALSE;
 
         filter->accum_cursor += map.size;
+        gst_buffer_unmap(buf, &map);
+
         return GST_FLOW_OK;
 
       }else{
@@ -372,7 +373,7 @@ gst_gendc_separator_chain (GstPad * pad, GstObject * parent, GstBuffer * buf)
         info->current_prt_info = info->current_prt_info->next;
         if (info->current_prt_info){
           jth_part_info = (struct _PartInfo *)info->current_prt_info->data;
-          jth_part_info->dataoffset = jth_part_info->dataoffset - filter->accum_cursor;
+          jth_part_info->dataoffset = jth_part_info->dataoffset > filter->accum_cursor ? jth_part_info->dataoffset - filter->accum_cursor : 0;
         }else{
           break;
         }

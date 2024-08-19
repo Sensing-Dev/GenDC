@@ -38,10 +38,9 @@ Let `%GENDC%` be the root of this repository. i.e. This file is `%GENDC%/gst/REA
 Also, `%GENDC_INSTALL%` is where you want to install gst-plugin in the next step. It has to be the absolute path.
 
 ```bash
-set PATH=%GENDC%/vcpkg_installed/x64-windows/bin;%PATH%
+set PATH=%GENDC%/gst/vcpkg_installed/x64-windows/bin;%PATH%
 set PKG_CONFIG_PATH=%GENDC%/gst/vcpkg_installed/x64-windows/lib/pkgconfig;%PKG_CONFIG_PATH%
-cd %GENDC%/gst
-meson setup --prefix %GENDC_INSTALL% build
+meson setup --prefix %GENDC_INSTALL% -Dgst-plugin=enabled build
 ```
 
 If pkg-config is not found, add it to PATH.
