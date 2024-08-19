@@ -180,8 +180,7 @@ int main(int argc, char* argv[]){
         num_failed += isError( prefix + "Validity", VALIDITY[ith_comp_idx], ith_component.isValidComponent(), show_log );
         num_failed += isError( prefix + "TypeId", TYPEID[ith_comp_idx], ith_component.getTypeId(), show_log );
         num_failed += isError( prefix + "SourceId", SOURCEID[ith_comp_idx], ith_component.getSourceId(), show_log );
-        // TODO: Add API getFormat()
-        // num_failed += isError( prefix + "Format", FORMAT[ith_comp_idx], ith_component.getFormat(), show_log );
+        num_failed += isError( prefix + "Format", FORMAT[ith_comp_idx], ith_component.getFormat(), show_log );
 
         int num_part_count = ith_component.getPartCount();
         int64_t ith_comp_datasize = 0;
