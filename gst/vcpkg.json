@@ -1,0 +1,11 @@
+{
+	"name": "gendc",
+	"version-semver": "0.1.1",
+	"builtin-baseline":"2c401863dd54a640aeb26ed736c55489c079323b",
+	"dependencies": [
+		{ "name": "gstreamer", "version>=": "1.22.5#7"}
+	],
+	"overrides": [
+		{ "name": "gstreamer", "version": "1.22.5#7"}
+	]
+}
