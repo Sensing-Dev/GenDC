@@ -1,6 +1,6 @@
 import io
 
-from setuptools import setup
+from setuptools import setup, find_packages
 import platform
 import sysconfig
 import os
@@ -33,7 +33,7 @@ def main():
         name="gendc-python",
         author="Momoko Kono",
         author_email="momoko.kono@fixstars.com",
-        packages=["gendc_python"],
+        packages=find_packages(),
         long_description=long_description,
         long_description_content_type="text/markdown",
         url="https://github.com/fixstars/ion-kit",
