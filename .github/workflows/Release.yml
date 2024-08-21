@@ -89,7 +89,7 @@ jobs:
 
     - name: Setup gendc-python
       run: |
-        pip install gendc-python
+        pip install gendc-python==${{  github.ref_name }}
 
     - name: Build gst-plugin
       shell: cmd
@@ -107,7 +107,8 @@ jobs:
 
     - name: Setup modules for gst-test
       run: |
-        pip install gendc-python numpy
+        pip install gendc-python==${{  github.ref_name }} 
+        pip install numpy
 
     - name: Test gst-plugin
       shell: cmd
@@ -170,7 +171,8 @@ jobs:
         ninja install
     - name: Setup modules for gst-test
       run: |
-        pip install gendc-python numpy
+        pip install gendc-python==${{ github.ref_name }}
+        pip install numpy
     - name: Test gst-plugin
       run: |
         export GST_PLUGIN_PATH=${{ github.workspace }}/install/gendc/lib/x86_64-linux-gnu/gstreamer-1.0:$GST_PLUGIN_PATH
