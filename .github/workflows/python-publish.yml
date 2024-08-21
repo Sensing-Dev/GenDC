@@ -96,7 +96,7 @@ jobs:
      run: |
        sleep 60 # wait package to upload
        pip3 install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple gendc-python==${{ github.event.release.tag_name }}
-       python3 -c "from  gendc_python.gendc_separator import descriptor as gendc"
+       cd ../ && python3 -c "from  gendc_python.gendc_separator import descriptor as gendc"
 
   upload_PYPI:
     needs: [ test_TEST_PYPI ]
