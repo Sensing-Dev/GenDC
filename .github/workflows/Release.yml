@@ -87,10 +87,6 @@ jobs:
         path: ${{ github.workspace }}\vcpkg_installed
         key: ${{ runner.os }}-vcpkg-${{ hashFiles('**/gst/vcpkg.json') }}
 
-    - name: Setup gendc-python
-      run: |
-        pip install gendc-python==${{  github.ref_name }}
-
     - name: Build gst-plugin
       shell: cmd
       run: |
@@ -146,7 +142,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
           files: |
-              ${{ github.workspace }}/gendc-${{ github.ref_name }}-win64.zip
+              gendc-${{ github.ref_name }}-win64.zip
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -206,7 +202,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
           files: |
-              ${{ github.workspace }}/gendc-${{ github.ref_name }}-linux.tar.gz
+              gendc-${{ github.ref_name }}-linux.tar.gz
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   
