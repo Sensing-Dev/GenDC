@@ -69,7 +69,9 @@ jobs:
       shell: cmd
       run: |
         git clone https://github.com/microsoft/vcpkg.git
-        cd vcpkg && .\bootstrap-vcpkg.bat  && cd ../
+        cd vcpkg
+        git checkout 2024.07.12
+        .\bootstrap-vcpkg.bat  && cd ../
 
     - name: Install dependencies
       if: steps.cache_status.outputs.cache-hit != 'true'
@@ -174,14 +176,14 @@ jobs:
     - name: Create tar archive
       run: |
         cp ${{ github.workspace }}/LICENSE.txt ${{ github.workspace }}/install/gendc
-        cd ${{ github.workspace }}/install
-        tar -czvf ${{ github.workspace }}/gendc-linux.tar.gz ./gendc/*
+        cd ${{ github.workspace }}/install/gendc
+        tar -czvf ${{ github.workspace }}/gendc-linux.tar.gz .
 
     - name: Extract archive content test
       run: |
-        mkdir check_archive_content
-        cd check_archive_content
-        tar -xvf ${{ github.workspace }}/gendc-linux.tar.gz  
+        mkdir -p check_archive_content/gendc
+        cd check_archive_content/gendc
+        tar -xvf ${{ github.workspace }}/gendc-linux.tar.gz  --strip-components 1
 
     - name: Check if archive content exists
       id: check_package_ubuntu
