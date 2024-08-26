@@ -177,7 +177,7 @@ jobs:
       run: |
         cp ${{ github.workspace }}/LICENSE.txt ${{ github.workspace }}/install/gendc
         cd ${{ github.workspace }}/install/gendc
-        tar -czvf ${{ github.workspace }}/gendc-${{ github.ref_name }}-linux.tar.gz .
+        tar -czvf ${{ github.workspace }}/gendc-linux.tar.gz .
 
     - name: Extract archive content test
       run: |
