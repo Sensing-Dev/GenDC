@@ -235,6 +235,7 @@ _get_valid_component_offset(GstMapInfo map, GstGenDCSeparator* filter, GstBuffer
     if (ith_component_flag & 0x0001){
       // invalid component
     }else{
+      filter->component_info = NULL;
       struct _ComponentInfo *this_component = g_new(struct _ComponentInfo, 1);
       this_component->ith_valid_component = i;
       this_component->partcount = *((guint16 *)(map.data + ith_component_offset + 46));
@@ -342,7 +343,9 @@ gst_gendc_separator_chain (GstPad * pad, GstObject * parent, GstBuffer * buf)
     GstPad* comp_pad = gst_gendc_separator_init_component_src_pad(filter, pad_name);
     g_free(pad_name);
 
-    struct _PartInfo *jth_part_info = (struct _PartInfo *)  info->current_prt_info->data;
+    struct _PartInfo *jth_part_info = NULL;
+    jth_part_info = (struct _PartInfo *)  info->current_prt_info->data;
+
     jth_part_info->dataoffset = jth_part_info->dataoffset > filter->accum_cursor ? jth_part_info->dataoffset - filter->accum_cursor : 0;
     while (info->current_prt_info){
       if (map.size < jth_part_info->dataoffset + jth_part_info->datasize){
@@ -390,6 +393,8 @@ gst_gendc_separator_chain (GstPad * pad, GstObject * parent, GstBuffer * buf)
     filter->head = TRUE;
     filter->framecount += 1;
     filter->accum_cursor = 0;
+    g_list_free_full(filter->component_info, g_free);
+    filter->component_info = NULL;
   } 
   gst_buffer_unmap(buf, &map);
   
