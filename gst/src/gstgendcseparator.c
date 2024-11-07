@@ -235,7 +235,6 @@ _get_valid_component_offset(GstMapInfo map, GstGenDCSeparator* filter, GstBuffer
     if (ith_component_flag & 0x0001){
       // invalid component
     }else{
-      filter->component_info = NULL;
       struct _ComponentInfo *this_component = g_new(struct _ComponentInfo, 1);
       this_component->ith_valid_component = i;
       this_component->partcount = *((guint16 *)(map.data + ith_component_offset + 46));
