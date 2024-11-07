@@ -11,6 +11,7 @@ jobs:
       PKG_CONFIG_INSTALL: C:\pkg-config
       PKG_CONFIG_VERSION: 0.28-1
       NINJA_INSTALL: C:\ninja
+      PKGCONFIG_URL: https://sourceforge.net/projects/pkgconfiglite/files/0.28-1/pkg-config-lite-0.28-1_bin-win32.zip/download
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4.1.1
@@ -32,7 +33,9 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Setup pkg-config-lite
-      run: winget install bloodrock.pkg-config-lite --accept-source-agreements --accept-package-agreements --location ${{env.PKG_CONFIG_INSTALL}} --version ${{env.PKG_CONFIG_VERSION}}
+      run: |
+        Invoke-WebRequest -UserAgent "Wget" -Uri ${{env.PKGCONFIG_URL}} -OutFile pkg-config-lite-0.28-1_bin-win32.zip
+        Expand-Archive -Path pkg-config-lite-0.28-1_bin-win32.zip -DestinationPath ${{env.PKG_CONFIG_INSTALL}}
 
     - name: Confirm pkg-config
       id: pkg-config-existence
