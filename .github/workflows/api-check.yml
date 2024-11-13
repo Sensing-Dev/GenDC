@@ -13,7 +13,6 @@ jobs:
       NINJA_INSTALL: C:\ninja
       PKGCONFIG_URL: https://sourceforge.net/projects/pkgconfiglite/files/0.28-1/pkg-config-lite-0.28-1_bin-win32.zip/download
       VCPKG_VERSION: 2024.07.12
-      VCPKG_ROOT: C:\vcpkg
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4.1.1
@@ -85,6 +84,8 @@ jobs:
       run: |
         dir
         vcpkg.exe install --x-install-root ${{ github.workspace }}\vcpkg_installed --x-manifest-root ${{ github.workspace }}\gst
+      env:
+        VCPKG_ROOT: C:\vcpkg
 
     - name: Cache dependencies
       if: steps.cache_status.outputs.cache-hit != 'true'
