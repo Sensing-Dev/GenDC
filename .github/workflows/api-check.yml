@@ -12,7 +12,8 @@ jobs:
       PKG_CONFIG_VERSION: 0.28-1
       NINJA_INSTALL: C:\ninja
       PKGCONFIG_URL: https://sourceforge.net/projects/pkgconfiglite/files/0.28-1/pkg-config-lite-0.28-1_bin-win32.zip/download
-      VCPKG_VERSION: 2024.10.21
+      VCPKG_VERSION: 2024.07.12
+      VCPKG_ROOT: C:\vcpkg
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4.1.1
@@ -72,6 +73,7 @@ jobs:
       if: steps.cache_status.outputs.cache-hit != 'true'
       shell: cmd
       run: |
+        cd C:\
         git clone https://github.com/microsoft/vcpkg.git
         cd vcpkg
         git checkout ${{env.VCPKG_VERSION}}
