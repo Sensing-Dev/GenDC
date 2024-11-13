@@ -19,38 +19,6 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Disable perl
-      run: |
-        rm -r C:\Strawberry\perl
-
-    - name: Setup pkg-config-lite
-      run: |
-        Invoke-WebRequest -UserAgent "Wget" -Uri ${{env.PKGCONFIG_URL}} -OutFile pkg-config-lite-0.28-1_bin-win32.zip
-        Expand-Archive -Path pkg-config-lite-0.28-1_bin-win32.zip -DestinationPath ${{env.PKG_CONFIG_INSTALL}}
-
-    - name: Confirm pkg-config
-      id: pkg-config-existence
-      uses: andstor/file-existence-action@v3
-      with:
-        files: ${{env.PKG_CONFIG_INSTALL}}\pkg-config-lite-${{env.PKG_CONFIG_VERSION}}\bin\pkg-config.exe
-        fail: true
-
-    - name: Setup Meson
-      run: |
-        pip install meson
-
-    - name: Setup Ninja
-      uses: ahmedyarub/setup-ninja@master
-      with:
-        version: 1.11.1
-        dest: ${{env.NINJA_INSTALL}}
-
-    - name: Add msbuild to PATH
-      uses: microsoft/setup-msbuild@v2
-
-    - name: Set up MSVC command env
-      uses: ilammy/msvc-dev-cmd@v1
-        
     - name: Check for existing cache
       id: cache_status
       uses: actions/cache@v4
@@ -84,9 +52,37 @@ jobs:
         path: ${{ github.workspace }}\vcpkg_installed
         key: ${{ runner.os }}-vcpkg-${{ hashFiles('**/gst/vcpkg.json') }}
 
-    - name: Setup gendc-python
+    - name: Disable perl to use pkg-config under C drive
       run: |
-        pip install gendc-python
+        rm -r C:\Strawberry\perl
+
+    - name: Setup pkg-config-lite to build gst-plugin
+      run: |
+        Invoke-WebRequest -UserAgent "Wget" -Uri ${{env.PKGCONFIG_URL}} -OutFile pkg-config-lite-0.28-1_bin-win32.zip
+        Expand-Archive -Path pkg-config-lite-0.28-1_bin-win32.zip -DestinationPath ${{env.PKG_CONFIG_INSTALL}}
+
+    - name: Confirm pkg-config
+      id: pkg-config-existence
+      uses: andstor/file-existence-action@v3
+      with:
+        files: ${{env.PKG_CONFIG_INSTALL}}\pkg-config-lite-${{env.PKG_CONFIG_VERSION}}\bin\pkg-config.exe
+        fail: true
+
+    - name: Setup Meson to build gst-plugin
+      run: |
+        pip install meson
+
+    - name: Setup Ninja to build gst-plugin
+      uses: ahmedyarub/setup-ninja@master
+      with:
+        version: 1.11.1
+        dest: ${{env.NINJA_INSTALL}}
+
+    - name: Add msbuild to PATH to build gst-plugin
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Set up MSVC command env to build gst-plugin
+      uses: ilammy/msvc-dev-cmd@v1
 
     - name: Build gst-plugin
       shell: cmd
