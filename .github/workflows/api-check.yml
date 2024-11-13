@@ -12,7 +12,7 @@ jobs:
       PKG_CONFIG_VERSION: 0.28-1
       NINJA_INSTALL: C:\ninja
       PKGCONFIG_URL: https://sourceforge.net/projects/pkgconfiglite/files/0.28-1/pkg-config-lite-0.28-1_bin-win32.zip/download
-      VCPKG_VERSION: 2024.07.12
+      VCPKG_VERSION: 2024.09.30
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4.1.1
@@ -22,16 +22,6 @@ jobs:
     - name: Disable perl
       run: |
         rm -r C:\Strawberry\perl
-
-    - name: Setup Python 3.11
-      uses: actions/setup-python@v4
-      with:
-        python-version: "3.11"
-
-    - name: Setup winget for pkg-config-lite
-      uses: Cyberboss/install-winget@v1
-      with:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Setup pkg-config-lite
       run: |
