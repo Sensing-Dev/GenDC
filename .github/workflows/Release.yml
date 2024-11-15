@@ -13,51 +13,13 @@ jobs:
       PKG_CONFIG_INSTALL: C:\pkg-config
       PKG_CONFIG_VERSION: 0.28-1
       NINJA_INSTALL: C:\ninja
+      PKGCONFIG_URL: https://sourceforge.net/projects/pkgconfiglite/files/0.28-1/pkg-config-lite-0.28-1_bin-win32.zip/download
+      VCPKG_VERSION: 2024.09.30
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4.1.1
       with:
         fetch-depth: 0
-
-    - name: Disable perl
-      run: |
-        rm -r C:\Strawberry\perl
-
-    - name: Setup Python 3.11
-      uses: actions/setup-python@v4
-      with:
-        python-version: "3.11"
-
-    - name: Setup winget for pkg-config-lite
-      uses: Cyberboss/install-winget@v1
-      with:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Setup pkg-config-lite
-      run: winget install bloodrock.pkg-config-lite --accept-source-agreements --accept-package-agreements --location ${{env.PKG_CONFIG_INSTALL}} --version ${{env.PKG_CONFIG_VERSION}}
-
-    - name: Confirm pkg-config
-      id: pkg-config-existence
-      uses: andstor/file-existence-action@v3
-      with:
-        files: ${{env.PKG_CONFIG_INSTALL}}\pkg-config-lite-${{env.PKG_CONFIG_VERSION}}\bin\pkg-config.exe
-        fail: true
-
-    - name: Setup Meson
-      run: |
-        pip install meson
-
-    - name: Setup Ninja
-      uses: ahmedyarub/setup-ninja@master
-      with:
-        version: 1.11.1
-        dest: ${{env.NINJA_INSTALL}}
-
-    - name: Add msbuild to PATH
-      uses: microsoft/setup-msbuild@v2
-
-    - name: Set up MSVC command env
-      uses: ilammy/msvc-dev-cmd@v1
         
     - name: Check for existing cache
       id: cache_status
@@ -72,15 +34,14 @@ jobs:
       run: |
         git clone https://github.com/microsoft/vcpkg.git
         cd vcpkg
-        git checkout 2024.07.12
+        git checkout ${{env.VCPKG_VERSION}}
         .\bootstrap-vcpkg.bat  && cd ../
 
     - name: Install dependencies
       if: steps.cache_status.outputs.cache-hit != 'true'
       shell: cmd
       run: |
-        dir
-        vcpkg.exe install --x-install-root ${{ github.workspace }}\vcpkg_installed --x-manifest-root ${{ github.workspace }}\gst
+        ${{ github.workspace }}\vcpkg\vcpkg.exe install --x-install-root ${{ github.workspace }}\vcpkg_installed --x-manifest-root ${{ github.workspace }}\gst
 
     - name: Cache dependencies
       if: steps.cache_status.outputs.cache-hit != 'true'
@@ -88,6 +49,38 @@ jobs:
       with:
         path: ${{ github.workspace }}\vcpkg_installed
         key: ${{ runner.os }}-vcpkg-${{ hashFiles('**/gst/vcpkg.json') }}
+
+    - name: Disable perl
+      run: |
+        rm -r C:\Strawberry\perl
+
+    - name: Setup pkg-config-lite to build gst-plugin
+      run: |
+        Invoke-WebRequest -UserAgent "Wget" -Uri ${{env.PKGCONFIG_URL}} -OutFile pkg-config-lite-0.28-1_bin-win32.zip
+        Expand-Archive -Path pkg-config-lite-0.28-1_bin-win32.zip -DestinationPath ${{env.PKG_CONFIG_INSTALL}}
+  
+    - name: Confirm pkg-config
+      id: pkg-config-existence
+      uses: andstor/file-existence-action@v3
+      with:
+        files: ${{env.PKG_CONFIG_INSTALL}}\pkg-config-lite-${{env.PKG_CONFIG_VERSION}}\bin\pkg-config.exe
+        fail: true
+
+    - name: Setup Meson to build gst-plugin
+      run: |
+        pip install meson
+
+    - name: Setup Ninja to build gst-plugin
+      uses: ahmedyarub/setup-ninja@master
+      with:
+        version: 1.11.1
+        dest: ${{env.NINJA_INSTALL}}
+
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Set up MSVC command env
+      uses: ilammy/msvc-dev-cmd@v1
 
     - name: Build gst-plugin
       shell: cmd
@@ -105,7 +98,7 @@ jobs:
 
     - name: Setup modules for gst-test
       run: |
-        pip install gendc-python==${{  github.ref_name }} 
+        pip install gendc-python==${{ github.ref_name }} 
         pip install numpy
 
     - name: Test gst-plugin
