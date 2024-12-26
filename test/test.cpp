@@ -1,18 +1,31 @@
 /*
 
 g++ test.cpp -o test \
--I ../gendc_cpp/gendc_separator/
+-I ../gendc_cpp
 
 */
 
 #include <iostream>
 #include <filesystem>
 
-#define Mono8 0x01080001
-#define Data8 0x01080116
-#define Data16 0x01100118
-#define Data32 0x0120011A
-#define Data64 0x0140011D
+#ifdef _WIN32
+#include <Windows.h>
+#include <stdio.h>
+#include <filesystem>
+#define PATH_MAX 4096
+#else
+#include <unistd.h>
+#endif
+
+#include <iostream>
+#include <string>
+#include <limits.h>
+
+#include <fstream>
+
+#include "gendc_separator/ContainerHeader.h"
+#include "gendc_separator/tools.h"
+#include "genicam/pfnc_converter.h"
 
 const int32_t NUM_COMPONENT = 9;
 const int32_t DESCRIPTOR_SIZE = 1520;
@@ -23,30 +36,17 @@ const int32_t NUM_PART[9] = {1, 2, 1, 1, 1, 3, 0, 0, 0};
 const int16_t SOURCEID[9] = {0x1001, 0x2001, 0x3001, 0x3002, 0x3003, 0x4001, 0x0001, 0x5001, 0x6001};
 const int64_t TYPEID[9] = {1, 0x8001, 0x8001, 0x8001, 0x8001, 0x8001, 0x8001, 0x8001, 0x8001};
 const int64_t DATASIZE[9] = {2073600, 3200, 32, 32, 32, 96, 0, 0, 0};
-const int32_t FORMAT[9] = {Mono8, Data16, Data16, Data16, Data16, Data16, Data8, Data8, Data8};
+const int32_t FORMAT[9] = {
+    convertPixelFormat("Mono8"), 
+    convertPixelFormat("Data16"), 
+    convertPixelFormat("Data16"), 
+    convertPixelFormat("Data16"), 
+    convertPixelFormat("Data16"), 
+    convertPixelFormat("Data16"), 
+    convertPixelFormat("Data8"), 
+    convertPixelFormat("Data8"), 
+    convertPixelFormat("Data8")};
 const std::string DIMENSION[9] = {"1920x1080", "800", "16", "16", "16", "16", "0", "0", "0"};
-
-#ifdef _WIN32
-
-#include <Windows.h>
-#include <stdio.h>
-#include <filesystem>
-#define PATH_MAX 4096
-
-#else
-
-#include <unistd.h>
-
-#endif
-
-#include <iostream>
-#include <string>
-#include <limits.h>
-
-#include <fstream>
-
-#include "ContainerHeader.h"
-#include "tools.h"
 
 #include <iomanip>
 

@@ -209,7 +209,7 @@ jobs:
       id: check-result-test
       run: |
         cd test
-        g++ test.cpp -o test -I ../gendc_cpp/gendc_separator/
+        g++ test.cpp -o test -I ../gendc_cpp
         if ./test -v; then
           echo 'PASSED C++ test'
         else

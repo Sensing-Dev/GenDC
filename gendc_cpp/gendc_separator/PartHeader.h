@@ -116,6 +116,10 @@ public:
         return HeaderType_;
     }
 
+    int32_t getFormat(){
+        return Format_;
+    }
+
     std::vector<int32_t> getDimension(){
         std::vector<int32_t> ret;
 
