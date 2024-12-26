@@ -1,7 +1,7 @@
 /*
 
 g++ test.cpp -o test \
--I ../gendc_cpp/gendc_separator/
+-I ../gendc_cpp
 
 */
 
@@ -23,8 +23,9 @@ g++ test.cpp -o test \
 
 #include <fstream>
 
-#include "ContainerHeader.h"
-#include "tools.h"
+#include "gendc_separator/ContainerHeader.h"
+#include "gendc_separator/tools.h"
+#include "genicam/pfnc_converter.h"
 
 const int32_t NUM_COMPONENT = 9;
 const int32_t DESCRIPTOR_SIZE = 1520;

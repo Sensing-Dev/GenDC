@@ -11,7 +11,7 @@ pdf_url = 'https://www.emva.org/wp-content/uploads/GenICamPixelFormatValues.pdf'
 root_dir = Path(src_dir).parent.absolute()
 
 python_dir = os.path.join(root_dir, 'gendc_python', 'gendc_separator')
-cpp_dir = os.path.join(root_dir, 'gendc_cpp', 'gendc_separator')
+cpp_dir = os.path.join(root_dir, 'gendc_cpp', 'genicam')
 
 if __name__ == "__main__":
     try:
