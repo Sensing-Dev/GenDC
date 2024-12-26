@@ -5,6 +5,8 @@
 #include <sstream>
 
 #include "Descriptor.h"
+#include "data_int_key.h"
+#include "data_str_key.h"
 
 // *****************************************************************************
 // NOTE: the layout of the first 8 bytes will never change.
@@ -49,6 +51,14 @@ int32_t getDescriptorSize(char* buf, const int container_version, std::array<int
         throw e;
     } 
     return descriptor_size;
+}
+
+int32_t convertPixelFormat(std::string name){
+    return data_str_key[name];
+}
+
+std::string convertPixelFormat(int32_t val){
+    return data_int_key[val];
 }
 
 #endif /*TOOLS_H*/
