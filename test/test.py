@@ -45,7 +45,7 @@ info_log(dev_mod_dir + " is added to sys.path to use non-packaged gendc_separato
 
 sys.path.append(str(dev_mod_dir))
 from gendc_separator import descriptor as gendc
-from gendc_separator import tools as genicam
+from genicam import pfnc_converter as genicam
 
 test_cases = {
     'output.bin' : {
