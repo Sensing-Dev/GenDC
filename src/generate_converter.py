@@ -68,9 +68,9 @@ if __name__ == "__main__":
                     cont += 'std::map<std::string, int32_t> ' + filename + ' {\n'
                 for key in eval(filename):
                     if filename == 'data_int_key':
-                        cont += '    {' + str(key) + ':\"' + eval(filename)[key] + '\"},\n'
+                        cont += '    {' + str(key) + ',\"' + eval(filename)[key] + '\"},\n'
                     elif filename == 'data_str_key':
-                        cont += '    {\"' + key + '\":' + str(eval(filename)[key]) + '},\n'
+                        cont += '    {\"' + key + '\",' + str(eval(filename)[key]) + '},\n'
                 cont += '};\n\n'
                 cont += '#endif /*{}_H*/'.format(filename.upper())
                 f.write(cont)
