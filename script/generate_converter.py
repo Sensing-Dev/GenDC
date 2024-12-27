@@ -78,7 +78,7 @@ if __name__ == "__main__":
     force_generate = argvs.force
 
     # Get content of pdf
-    online_pdf_date, data_int_key, data_str_key = dl_and_load_pdf(pdf_url)
+    online_pdf_date, pfnc_data_int_key, pfnc_data_str_key = dl_and_load_pdf(pdf_url)
 
     filename = 'pfnc_mapping'
     python_str = '# {}.py generated based on {} [{}]\n\n'.format(filename, pdf_url, online_pdf_date)
@@ -88,6 +88,8 @@ if __name__ == "__main__":
     cpp_str += '#include <iostream>\n'
     cpp_str += '#include <map>\n'
     cpp_str += '#include <string>\n\n'
+    cpp_str += 'namespace gendc{\n'
+    cpp_str += 'namespace pfnc{\n'
 
     if not is_new_pdf_available(online_pdf_date) and not force_generate:
         sys.exit(0)
@@ -95,23 +97,26 @@ if __name__ == "__main__":
     if force_generate:
         print('Generate headers with latest pdf...')
         try:
-            for obj_name in ['data_int_key', 'data_str_key']:
+            for obj_name in ['pfnc_data_int_key', 'pfnc_data_str_key']:
                 
                 python_str += obj_name + ' = { \\\n'
-                if obj_name == 'data_int_key':
+                if obj_name == 'pfnc_data_int_key':
                     cpp_str += 'std::map<int32_t, std::string> ' + obj_name + ' {\n'
-                elif obj_name == 'data_str_key':
+                elif obj_name == 'pfnc_data_str_key':
                     cpp_str += 'std::map<std::string, int32_t> ' + obj_name + ' {\n'
 
                 for key in eval(obj_name):
-                    if obj_name == 'data_int_key':
+                    if obj_name == 'pfnc_data_int_key':
                         python_str += '    {} : \'{}\',\n'.format(key, eval(obj_name)[key])
                         cpp_str += '    {' + str(key) + ',\"' + eval(obj_name)[key] + '\"},\n'
-                    elif obj_name == 'data_str_key':
+                    elif obj_name == 'pfnc_data_str_key':
                         python_str += '    \'{}\' : {},\n'.format(key, eval(obj_name)[key])
                         cpp_str += '    {\"' + key + '\",' + str(eval(obj_name)[key]) + '},\n'
                 python_str += '}\n\n'
                 cpp_str += '};\n\n'
+
+            cpp_str += '} // namespace pfnc\n'
+            cpp_str += '} // namespace gendc\n\n'
             cpp_str += '#endif /*{}_H*/'.format(obj_name.upper())
 
             if not os.path.isdir(python_dir):

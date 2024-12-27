@@ -9,23 +9,7 @@
 
 #include "Descriptor.h"
 
-int getByteInFormat(int format){
-    switch (format){
-        case Mono12:
-            return 2;
-        case Data8:
-            return 1;
-        case Data16:
-            return 2;
-        case Data32:
-            return 4;
-        case Data32f:
-            return 4;
-        default:
-            throw std::invalid_argument("wrong format\n");
-    }
-}
-// namespace {
+namespace gendc{
 
 class PartHeader : public Header{
 public: 
@@ -242,5 +226,5 @@ private:
     size_t offset_ = 0; // currently part header offset
     char * part_;
 };
-// }
+}
 #endif /*PARTHEADER_H*/

@@ -23,9 +23,10 @@ g++ test.cpp -o test \
 
 #include <fstream>
 
-#include "gendc_separator/ContainerHeader.h"
 #include "gendc_separator/tools.h"
-#include "genicam/pfnc_converter.h"
+#include "gendc_common.h"
+
+using namespace gendc;
 
 const int32_t NUM_COMPONENT = 9;
 const int32_t DESCRIPTOR_SIZE = 1520;
@@ -37,15 +38,15 @@ const int16_t SOURCEID[9] = {0x1001, 0x2001, 0x3001, 0x3002, 0x3003, 0x4001, 0x0
 const int64_t TYPEID[9] = {1, 0x8001, 0x8001, 0x8001, 0x8001, 0x8001, 0x8001, 0x8001, 0x8001};
 const int64_t DATASIZE[9] = {2073600, 3200, 32, 32, 32, 96, 0, 0, 0};
 const int32_t FORMAT[9] = {
-    convertPixelFormat("Mono8"), 
-    convertPixelFormat("Data16"), 
-    convertPixelFormat("Data16"), 
-    convertPixelFormat("Data16"), 
-    convertPixelFormat("Data16"), 
-    convertPixelFormat("Data16"), 
-    convertPixelFormat("Data8"), 
-    convertPixelFormat("Data8"), 
-    convertPixelFormat("Data8")};
+    pfnc::convert_pixelformat("Mono8"), 
+    pfnc::convert_pixelformat("Data16"), 
+    pfnc::convert_pixelformat("Data16"), 
+    pfnc::convert_pixelformat("Data16"), 
+    pfnc::convert_pixelformat("Data16"), 
+    pfnc::convert_pixelformat("Data16"), 
+    pfnc::convert_pixelformat("Data8"), 
+    pfnc::convert_pixelformat("Data8"), 
+    pfnc::convert_pixelformat("Data8")};
 const std::string DIMENSION[9] = {"1920x1080", "800", "16", "16", "16", "16", "0", "0", "0"};
 
 #include <iomanip>

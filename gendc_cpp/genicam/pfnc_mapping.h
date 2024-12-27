@@ -6,7 +6,9 @@
 #include <map>
 #include <string>
 
-std::map<int32_t, std::string> data_int_key {
+namespace gendc{
+namespace pfnc{
+std::map<int32_t, std::string> pfnc_data_int_key {
     {17301505,"Mono8"},
     {17301506,"Mono8s"},
     {17825795,"Mono10"},
@@ -292,7 +294,7 @@ std::map<int32_t, std::string> data_int_key {
     {41943340,"Coord3D_AC64f_Planar"},
 };
 
-std::map<std::string, int32_t> data_str_key {
+std::map<std::string, int32_t> pfnc_data_str_key {
     {"Mono8",17301505},
     {"Mono8s",17301506},
     {"Mono10",17825795},
@@ -578,4 +580,7 @@ std::map<std::string, int32_t> data_str_key {
     {"Coord3D_AC64f_Planar",41943340},
 };
 
-#endif /*DATA_STR_KEY_H*/
+} // namespace pfnc
+} // namespace gendc
+
+#endif /*PFNC_DATA_STR_KEY_H*/

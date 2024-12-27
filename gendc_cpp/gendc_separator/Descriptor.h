@@ -8,6 +8,7 @@
 #include <map>
 #include <tuple>
 
+namespace gendc{
 #define GENDC_SIGNATURE 0x43444E47
 
 // *****************************************************************************
@@ -38,34 +39,45 @@
 #define GDC_1D 0x4100
 #define GDC_2D 0x4200
 
-//format
-#define Mono12 0x01100005
-#define Data8 0x01080116
-#define Data16 0x01100118
-#define Data32 0x0120011A
-#define Data32f 0x0120011C
-
-// *****************************************************************************
-// dispaly
-// *****************************************************************************
-
-#define DISPLAY_ITEM_WIDTH 16
-#define DISPLAY_SIZE_WIDTH 4
-#define DISPLAY_VALUE_WIDTH 10
-
 // *****************************************************************************
 // for container version and descriptor offset
 // *****************************************************************************
 #define SIGNATURE_OFFSET 0
 #define VERSION_OFFSET 4
 
-namespace {
-    enum offset {
-        descriptor_size,
-        deta_size,
-        data_offset,
-    };
-}
+// *****************************************************************************
+// dispaly
+// *****************************************************************************
+
+namespace display{
+#define DISPLAY_ITEM_WIDTH 16
+#define DISPLAY_SIZE_WIDTH 4
+#define DISPLAY_VALUE_WIDTH 10
+
+enum level{
+    default_display,
+    container_header,
+    component_header,
+    part_header,
+};
+
+std::string display_indent(int level=default_display){
+    std::string ret="";
+    for (int i = 0; i < level; ++i){
+        ret += "\t";
+    }
+    return ret;
+} 
+
+} // genicam::display
+
+namespace descriptor {
+enum offset {
+    descriptor_size,
+    deta_size,
+    data_offset,
+};
+} // genicam::descriptor
 
 #define GENDC_V10 0x0100
 
@@ -76,20 +88,8 @@ std::map<int32_t, std::array<int32_t, 3>> offset_for_version =
 };
 
 
-enum display_lebel{
-    default_display,
-    container_header_display,
-    component_header_display,
-    part_header_display
-};
 
-std::string display_indent(int level=default_display){
-    std::string ret="";
-    for (int i = 0; i < level; ++i){
-        ret += "\t";
-    }
-    return ret;
-} 
+
 
 class Header{
 public:
@@ -114,8 +114,8 @@ protected:
     }
 
     template <typename T>
-    int displayItemInfo(std::string item_name, T item, int level=default_display, bool hex_format=false){
-        std::string indent = display_indent(level);
+    int displayItemInfo(std::string item_name, T item, int level=display::default_display, bool hex_format=false){
+        std::string indent = display::display_indent(level);
         int sizeof_item = sizeof(item);
         std::cout << indent << std::right << std::setw(DISPLAY_ITEM_WIDTH) << item_name;
         std::cout << std::right << std::setw(DISPLAY_SIZE_WIDTH)  << " (" << sizeof_item << "):";
@@ -124,7 +124,7 @@ protected:
     }
 
     template <typename T>
-    int displayContainer(std::string container_name, const std::vector<T>&container, int level=default_display, bool hex=false){
+    int displayContainer(std::string container_name, const std::vector<T>&container, int level=display::default_display, bool hex=false){
         int total_size = 0;
         if (container.size() > 0){
             std::string key = container_name;
@@ -132,14 +132,14 @@ protected:
                 total_size += displayItemInfo(i > 0 ? "" : key, container.at(i), level, hex);
             }
         }else{
-            std::cout << display_indent(level) << std::right << std::setw(DISPLAY_ITEM_WIDTH) << container_name;
+            std::cout << display::display_indent(level) << std::right << std::setw(DISPLAY_ITEM_WIDTH) << container_name;
             std::cout << std::right << std::setw(DISPLAY_SIZE_WIDTH)  << " (" << 0 << "):\n";
         }
         return total_size;
     }
 
     template <typename T, size_t N>
-    int displayContainer(std::string container_name, const std::array<T, N>&container, int level=default_display, bool hex=false){
+    int displayContainer(std::string container_name, const std::array<T, N>&container, int level=display::default_display, bool hex=false){
         int total_size = 0;
         if (container.size() > 0){
             std::string key = container_name;
@@ -147,7 +147,7 @@ protected:
                 total_size += displayItemInfo(i > 0 ? "" : key, container.at(i), level, hex);
             }
         }else{
-            std::cout << display_indent(level) << std::right << std::setw(DISPLAY_ITEM_WIDTH) << container_name;
+            std::cout << display::display_indent(level) << std::right << std::setw(DISPLAY_ITEM_WIDTH) << container_name;
             std::cout << std::right << std::setw(DISPLAY_SIZE_WIDTH)  << " (" << 0 << "):\n";
         }
         return total_size;
@@ -187,4 +187,6 @@ protected:
 protected:
     int32_t HeaderSize_ = 0;
 };
+}
+
 #endif /*DESCRIPTOR_H*/

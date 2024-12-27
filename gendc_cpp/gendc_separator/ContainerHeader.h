@@ -2,7 +2,7 @@
 #define CONTAINERHEADER_H
 
 #include "ComponentHeader.h"
-
+namespace gendc{
 class ContainerHeader : public Header{
 public:
 
@@ -184,5 +184,5 @@ private:
 
     char* container_;
 };
-
+} //namespace
 #endif /*CONTAINERHEADER_H*/

@@ -10,7 +10,7 @@
 // NOTE: the layout of the first 8 bytes will never change.
 //       this contains signature and version info
 // *****************************************************************************
-
+namespace gendc{
 bool isGenDC(char* buf){
     int32_t signature;
     std::memcpy(&signature, buf + SIGNATURE_OFFSET, sizeof(int32_t));
@@ -35,7 +35,7 @@ int32_t getDescriptorSize(char* buf, const int container_version, std::array<int
     int32_t descriptor_size;
 
     try{
-        std::memcpy(&descriptor_size, buf + (offset_for_version.at(container_version)).at(::descriptor_size), sizeof(int32_t));
+        std::memcpy(&descriptor_size, buf + (offset_for_version.at(container_version)).at(descriptor::descriptor_size), sizeof(int32_t));
     }catch (std::out_of_range& e){
         std::stringstream ss;
         ss << "ERROR\t" << e.what() << ": "
@@ -50,5 +50,5 @@ int32_t getDescriptorSize(char* buf, const int container_version, std::array<int
     } 
     return descriptor_size;
 }
-
+}
 #endif /*TOOLS_H*/
