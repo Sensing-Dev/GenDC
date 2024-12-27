@@ -1,8 +1,7 @@
 #ifndef PFNC_CONVERTER_H
 #define PFNC_CONVERTER_H
 
-#include "data_int_key.h"
-#include "data_str_key.h"
+#include "pfnc_mapping.h"
 
 int32_t convertPixelFormat(std::string name){
     return data_str_key[name];

@@ -53,7 +53,10 @@ def dl_and_load_pdf(pdf_url):
 def is_new_pdf_available(online_pdf_date):
     current_pdf_date = ''
 
-    with open(os.path.join(python_dir, 'data_int_key.py'), 'r') as f:
+    if not os.path.isfile(os.path.join(python_dir, 'pfnc_mapping.py')):
+        return True
+
+    with open(os.path.join(python_dir, 'pfnc_mapping.py'), 'r') as f:
         first_line = f.readlines()[0]
         if first_line.startswith('#'):
             current_pdf_date = first_line.split('[')[1].split(']')[0]
@@ -77,45 +80,54 @@ if __name__ == "__main__":
     # Get content of pdf
     online_pdf_date, data_int_key, data_str_key = dl_and_load_pdf(pdf_url)
 
-    if is_new_pdf_available(online_pdf_date):
-        if force_generate:
-            print('Generate headers with latest pdf...')
-            try:
-                for filename in ['data_int_key', 'data_str_key']:
-                    with open(os.path.join(python_dir, '{}.py'.format(filename)), 'w') as f:
-                        cont = '# {}.py generated based on {} [{}]\n\n'.format(filename, pdf_url, online_pdf_date)
-                        cont += filename + ' = { \\\n'
-                        for key in eval(filename):
-                            if filename == 'data_int_key':
-                                cont += '    {} : \'{}\',\n'.format(key, eval(filename)[key])
-                            elif filename == 'data_str_key':
-                                cont += '    \'{}\' : {},\n'.format(key, eval(filename)[key])
-                        cont += '}'
-                        f.write(cont)
+    filename = 'pfnc_mapping'
+    python_str = '# {}.py generated based on {} [{}]\n\n'.format(filename, pdf_url, online_pdf_date)
+    cpp_str = '#ifndef {}_H\n'.format(filename.upper())
+    cpp_str += '#define {}_H\n'.format(filename.upper())
+    cpp_str += '// {}.h generated based on {} [{}]\n\n'.format(filename, pdf_url, online_pdf_date)
+    cpp_str += '#include <iostream>\n'
+    cpp_str += '#include <map>\n'
+    cpp_str += '#include <string>\n\n'
 
-                    with open(os.path.join(cpp_dir, '{}.h'.format(filename)), 'w') as f:
-                        cont = '#ifndef {}_H\n'.format(filename.upper())
-                        cont += '#define {}_H\n'.format(filename.upper())
-                        cont += '// {}.h generated based on {} [{}]\n\n'.format(filename, pdf_url, online_pdf_date)
-                        cont += '#include <iostream>\n'
-                        cont += '#include <map>\n'
-                        cont += '#include <string>\n\n'
-                        if filename == 'data_int_key':
-                            cont += 'std::map<int32_t, std::string> ' + filename + ' {\n'
-                        elif filename == 'data_str_key':
-                            cont += 'std::map<std::string, int32_t> ' + filename + ' {\n'
-                        for key in eval(filename):
-                            if filename == 'data_int_key':
-                                cont += '    {' + str(key) + ',\"' + eval(filename)[key] + '\"},\n'
-                            elif filename == 'data_str_key':
-                                cont += '    {\"' + key + '\",' + str(eval(filename)[key]) + '},\n'
-                        cont += '};\n\n'
-                        cont += '#endif /*{}_H*/'.format(filename.upper())
-                        f.write(cont)
-                        
-            except:
-                print('Failed to save {}'.format(filename))
-                sys.exit(1)
-        else:
-            print('Updated version of pdf is available on {}'.format(pdf_url))
+    if not is_new_pdf_available(online_pdf_date) and not force_generate:
+        sys.exit(0)
+
+    if force_generate:
+        print('Generate headers with latest pdf...')
+        try:
+            for obj_name in ['data_int_key', 'data_str_key']:
+                
+                python_str += obj_name + ' = { \\\n'
+                if obj_name == 'data_int_key':
+                    cpp_str += 'std::map<int32_t, std::string> ' + obj_name + ' {\n'
+                elif obj_name == 'data_str_key':
+                    cpp_str += 'std::map<std::string, int32_t> ' + obj_name + ' {\n'
+
+                for key in eval(obj_name):
+                    if obj_name == 'data_int_key':
+                        python_str += '    {} : \'{}\',\n'.format(key, eval(obj_name)[key])
+                        cpp_str += '    {' + str(key) + ',\"' + eval(obj_name)[key] + '\"},\n'
+                    elif obj_name == 'data_str_key':
+                        python_str += '    \'{}\' : {},\n'.format(key, eval(obj_name)[key])
+                        cpp_str += '    {\"' + key + '\",' + str(eval(obj_name)[key]) + '},\n'
+                python_str += '}\n\n'
+                cpp_str += '};\n\n'
+            cpp_str += '#endif /*{}_H*/'.format(obj_name.upper())
+
+            if not os.path.isdir(python_dir):
+                os.mkdir(python_dir)
+            with open(os.path.join(python_dir, '{}.py'.format(filename)), 'w') as f:
+                f.write(python_str)
+
+            if not os.path.isdir(cpp_dir):
+                os.mkdir(cpp_dir)
+            with open(os.path.join(cpp_dir, '{}.h'.format(filename)), 'w') as f:
+                f.write(cpp_str)
+
+                    
+        except:
+            print('Failed to save {}'.format(filename))
+            sys.exit(1)
+    else:
+        print('Updated version of pdf is available on {}'.format(pdf_url))
 
