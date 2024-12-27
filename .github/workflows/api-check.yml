@@ -225,7 +225,7 @@ jobs:
       continue-on-error: true
       run: |
         pip install pypdf
-        if python3 src/check_pixel_format_update.py; then
+        if python3 script/check_pixel_format_update.py; then
           echo 'PFNC data is up-to-date'
         else
           echo 'New pdf is available'
