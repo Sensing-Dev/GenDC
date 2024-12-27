@@ -216,3 +216,17 @@ jobs:
           echo 'FAILED C++ test'
           exit 1
         fi
+
+  check-pixel-format-pdf-version:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Check any update
+      continue-on-error: true
+      run: |
+        if python3 src/check_pixel_format_update.py; then
+          echo 'PFNC data is up-to-date'
+        else
+          echo 'New pdf is available'
+          exit 1
+        fi

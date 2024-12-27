@@ -200,23 +200,3 @@ jobs:
               gendc-${{ github.ref_name }}-linux.tar.gz
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  
-  release-job:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
-
-    - name: Create ZIP Archive
-      run: |
-        cd gendc_cpp
-        cp ../LICENSE.txt .
-        zip -r gendc_separator_${{ github.ref_name }}_win64.zip gendc_separator
-    - name: Release
-      uses: softprops/action-gh-release@v1
-      with:
-          files: |
-              gendc_cpp/gendc_separator*.zip
-      env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
