@@ -181,8 +181,8 @@ jobs:
         files: "${{ github.workspace }}/check_archive_content/gendc/LICENSE.txt, ${{ github.workspace }}/check_archive_content/gendc/include/gendc_separator, ${{ github.workspace }}/check_archive_content/gendc/lib/x86_64-linux-gnu/gstreamer-1.0/"
         fail: true
 
-  test:
-    runs-on: ubuntu-latest
+  test-header-and-python:
+    runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python
@@ -218,7 +218,7 @@ jobs:
         fi
 
   check-pixel-format-pdf-version:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v4
     - name: Check any update
