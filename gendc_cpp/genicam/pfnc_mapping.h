@@ -1,5 +1,5 @@
-#ifndef PFNC_MAPPING_H
-#define PFNC_MAPPING_H
+#ifndef GENICAM_PFNC_MAPPING_H
+#define GENICAM_PFNC_MAPPING_H
 // pfnc_mapping.h generated based on https://www.emva.org/wp-content/uploads/GenICamPixelFormatValues.pdf [22-December-2022]
 
 #include <iostream>
@@ -583,4 +583,4 @@ std::map<std::string, int32_t> pfnc_data_str_key {
 } // namespace pfnc
 } // namespace gendc
 
-#endif /*PFNC_DATA_STR_KEY_H*/
+#endif /*GENICAM_PFNC_DATA_STR_KEY_H*/

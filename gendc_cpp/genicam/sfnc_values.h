@@ -1,5 +1,5 @@
-#ifndef SFNC_VALUES_H
-#define SFNC_VALUES_H
+#ifndef GENICAM_SFNC_VALUES_H
+#define GENICAM_SFNC_VALUES_H
 // https://www.emva.org/wp-content/uploads/GenICam_SFNC_v2_7.pdf
 
 namespace SFNC{
@@ -20,4 +20,4 @@ namespace sfnc{
 } // namespace sfnc
 } // namespace SFNC
 
-#endif /*SFNC_VALUES_H*/
+#endif /*GENICAM_SFNC_VALUES_H*/

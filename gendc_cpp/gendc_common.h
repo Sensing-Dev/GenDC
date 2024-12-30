@@ -1,5 +1,5 @@
-#ifndef GENIMCAM_UTIL_H
-#define GENIMCAM_UTIL_H
+#ifndef GENDC_COMMON_H
+#define GENDC_COMMON_H
 
 #include "genicam/pfnc_mapping.h"
 #include "gendc_separator/ContainerHeader.h"
@@ -61,4 +61,4 @@ int32_t getDescriptorSize(char* buf, const int container_version, std::array<int
 
 } // namespace gendc
 
-#endif /*GENIMCAM_UTIL_H*/
+#endif /*GENDC_COMMON_H*/

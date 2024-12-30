@@ -1,5 +1,5 @@
-#ifndef COMPONENTHEADER_H
-#define COMPONENTHEADER_H
+#ifndef GENDC_SEPARATOR_COMPONENTHEADER_H
+#define GENDC_SEPARATOR_COMPONENTHEADER_H
 
 #include "PartHeader.h"
 namespace gendc{
@@ -160,4 +160,4 @@ private:
 };
 }
 
-#endif /*COMPONENTHEADER_H*/
+#endif /*GENDC_SEPARATOR_COMPONENTHEADER_H*/

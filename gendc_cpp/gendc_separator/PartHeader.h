@@ -1,5 +1,5 @@
-#ifndef PARTHEADER_H
-#define PARTHEADER_H
+#ifndef GENDC_SEPARATOR_PARTHEADER_H
+#define GENDC_SEPARATOR_PARTHEADER_H
 #include <iostream>
 #include <vector>
 #include <array>
@@ -227,4 +227,4 @@ private:
     char * part_;
 };
 }
-#endif /*PARTHEADER_H*/
+#endif /*GENDC_SEPARATOR_PARTHEADER_H*/

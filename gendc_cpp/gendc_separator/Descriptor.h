@@ -1,5 +1,5 @@
-#ifndef DESCRIPTOR_H
-#define DESCRIPTOR_H
+#ifndef GENDC_SEPARATOR_DESCRIPTOR_H
+#define GENDC_SEPARATOR_DESCRIPTOR_H
 #include <cstring>
 #include <iostream>
 #include <vector>
@@ -169,4 +169,4 @@ protected:
 };
 }
 
-#endif /*DESCRIPTOR_H*/
+#endif /*GENDC_SEPARATOR_DESCRIPTOR_H*/
