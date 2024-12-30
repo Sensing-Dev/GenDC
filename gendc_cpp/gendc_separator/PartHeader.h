@@ -81,11 +81,11 @@ public:
     }
 
     bool isData2DImage(){
-        return HeaderType_ == 0x4200;
+        return HeaderType_ == part_header_type::GDC_2D;
     }
 
     bool isData1DImage(){
-        return HeaderType_ == 0x4100;
+        return HeaderType_ == part_header_type::GDC_1D;;
     }
 
     int64_t getDataOffset(){

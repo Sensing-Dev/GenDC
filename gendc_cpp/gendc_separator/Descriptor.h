@@ -9,47 +9,43 @@
 #include <tuple>
 
 namespace gendc{
-#define GENDC_SIGNATURE 0x43444E47
+
+const int32_t GENDC_SIGNATURE = 0x43444E47;
 
 // *****************************************************************************
-// const offset v1.0.1
+// const size and offset v1.0.1
 // *****************************************************************************
-#define DEFAULT_CONT_HEADER_SIZE 56
-#define DEFAULT_COMP_HEADER_SIZE 48
-#define DEFAULT_PART_HEADER_SIZE 40
+const int32_t DEFAULT_CONT_HEADER_SIZE = 56;
+const int32_t DEFAULT_COMP_HEADER_SIZE = 48;
+const int32_t DEFAULT_PART_HEADER_SIZE = 40;
 
+namespace offset{
+const size_t DESCRIPTOR_SIZE = 48;
+const size_t DATASIZE = 32;
+const size_t DATA_OFFSET = 40;
+}
 // *****************************************************************************
-// ID & hex values
+// GenDC Part Header Types
 // *****************************************************************************
-
-// TypeId (i.e. ComponentIdValue)
-#define Type_Undefined 0
-#define Type_Intensity 1
-#define Type_Infrared 2
-#define Type_Ultraviolet 3
-#define Type_Range 4
-#define Type_Reflectance 5
-#define Type_Confidence 6
-#define Type_Scatter 7
-#define Type_Disparity 8
-#define Type_Multispectral 9
-#define Type_Metadata 0x8001
-
-// header type
-#define GDC_1D 0x4100
-#define GDC_2D 0x4200
+namespace part_header_type{
+const int16_t GDC_META = 0x4000;
+const int16_t GDC_1D = 0x4100;
+const int16_t GDC_2D = 0x4200;
+}
 
 // *****************************************************************************
 // for container version and descriptor offset
 // *****************************************************************************
-#define SIGNATURE_OFFSET 0
-#define VERSION_OFFSET 4
+namespace offset{
+const size_t SIGNATURE = 0;
+const size_t VERSION = 4;
+}
 
 // *****************************************************************************
 // dispaly
 // *****************************************************************************
-
 namespace display{
+
 #define DISPLAY_ITEM_WIDTH 16
 #define DISPLAY_SIZE_WIDTH 4
 #define DISPLAY_VALUE_WIDTH 10
@@ -70,22 +66,6 @@ std::string display_indent(int level=default_display){
 } 
 
 } // genicam::display
-
-namespace descriptor {
-enum offset {
-    descriptor_size,
-    deta_size,
-    data_offset,
-};
-} // genicam::descriptor
-
-#define GENDC_V10 0x0100
-
-// https://www.emva.org/wp-content/uploads/GenICam_GenDC_v1_1.pdf
-std::map<int32_t, std::array<int32_t, 3>> offset_for_version = 
-{
-    {GENDC_V10, std::array<int32_t, 3>{48, 32, 40}},
-};
 
 
 

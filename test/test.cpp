@@ -23,7 +23,6 @@ g++ test.cpp -o test \
 
 #include <fstream>
 
-#include "gendc_separator/tools.h"
 #include "gendc_common.h"
 
 using namespace gendc;
