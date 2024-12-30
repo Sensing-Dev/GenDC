@@ -45,7 +45,7 @@ info_log(dev_mod_dir + " is added to sys.path to use non-packaged gendc_separato
 
 sys.path.append(str(dev_mod_dir))
 from gendc_separator import descriptor as gendc
-from genicam import pfnc_converter as genicam
+from genicam import tool as genicam
 
 test_cases = {
     'output.bin' : {
@@ -59,15 +59,15 @@ test_cases = {
         'TypeId' : [1, 0x8001, 0x8001, 0x8001, 0x8001, 0x8001, 0x8001, 0x8001, 0x8001],
         'DataSize' : [2073600, 3200, 32, 32, 32, 96, 0, 0, 0],
         'Format' : [
-            genicam.convert_pixelformat("Mono8"), 
-            genicam.convert_pixelformat("Data16"), 
-            genicam.convert_pixelformat("Data16"),
-            genicam.convert_pixelformat("Data16"),
-            genicam.convert_pixelformat("Data16"), 
-            genicam.convert_pixelformat("Data16"),
-            genicam.convert_pixelformat("Data8"),
-            genicam.convert_pixelformat("Data8"),
-            genicam.convert_pixelformat("Data8") ],
+            genicam.pfnc_convert_pixelformat("Mono8"), 
+            genicam.pfnc_convert_pixelformat("Data16"), 
+            genicam.pfnc_convert_pixelformat("Data16"),
+            genicam.pfnc_convert_pixelformat("Data16"),
+            genicam.pfnc_convert_pixelformat("Data16"), 
+            genicam.pfnc_convert_pixelformat("Data16"),
+            genicam.pfnc_convert_pixelformat("Data8"),
+            genicam.pfnc_convert_pixelformat("Data8"),
+            genicam.pfnc_convert_pixelformat("Data8") ],
         'Dimension' : ['1920x1080', '800', '16', '16', '16', '16', '0', '0', '0']
     },
 }

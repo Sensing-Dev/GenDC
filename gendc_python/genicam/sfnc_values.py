@@ -1,0 +1,12 @@
+comp_id_val_undefined = 0
+comp_id_val_intensity = 1
+comp_id_val_infrared = 2
+comp_id_val_ultraviolet = 3
+comp_id_val_range = 4
+comp_id_val_reflectance = 5
+comp_id_val_confidence = 6
+comp_id_val_scatter = 7
+comp_id_val_disparity = 8
+comp_id_val_multispectral = 9
+comp_id_val_metadata = 0x8001
+#TODO add Custom = 0xFF00-0xFFFE 
