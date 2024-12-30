@@ -1,5 +1,5 @@
-#ifndef PARTHEADER_H
-#define PARTHEADER_H
+#ifndef GENDC_SEPARATOR_PARTHEADER_H
+#define GENDC_SEPARATOR_PARTHEADER_H
 #include <iostream>
 #include <vector>
 #include <array>
@@ -9,23 +9,7 @@
 
 #include "Descriptor.h"
 
-int getByteInFormat(int format){
-    switch (format){
-        case Mono12:
-            return 2;
-        case Data8:
-            return 1;
-        case Data16:
-            return 2;
-        case Data32:
-            return 4;
-        case Data32f:
-            return 4;
-        default:
-            throw std::invalid_argument("wrong format\n");
-    }
-}
-// namespace {
+namespace gendc{
 
 class PartHeader : public Header{
 public: 
@@ -97,11 +81,11 @@ public:
     }
 
     bool isData2DImage(){
-        return HeaderType_ == 0x4200;
+        return HeaderType_ == part_header_type::GDC_2D;
     }
 
     bool isData1DImage(){
-        return HeaderType_ == 0x4100;
+        return HeaderType_ == part_header_type::GDC_1D;;
     }
 
     int64_t getDataOffset(){
@@ -242,5 +226,5 @@ private:
     size_t offset_ = 0; // currently part header offset
     char * part_;
 };
-// }
-#endif /*PARTHEADER_H*/
+}
+#endif /*GENDC_SEPARATOR_PARTHEADER_H*/

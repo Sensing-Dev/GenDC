@@ -1,8 +1,8 @@
-#ifndef CONTAINERHEADER_H
-#define CONTAINERHEADER_H
+#ifndef GENDC_SEPARATOR_CONTAINERHEADER_H
+#define GENDC_SEPARATOR_CONTAINERHEADER_H
 
 #include "ComponentHeader.h"
-
+namespace gendc{
 class ContainerHeader : public Header{
 public:
 
@@ -184,5 +184,5 @@ private:
 
     char* container_;
 };
-
-#endif /*CONTAINERHEADER_H*/
+} //namespace
+#endif /*GENDC_SEPARATOR_CONTAINERHEADER_H*/

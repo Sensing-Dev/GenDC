@@ -1,7 +1,9 @@
+def is_gendc(binary_info):
+    sig_val = int.from_bytes(binary_info[0:4], "little")
+    return sig_val == 0x43444E47
 
 def is_valid_key(header_info, key):
     return key in header_info
-
 
 # read and write
 def get_offset(header_info, key):

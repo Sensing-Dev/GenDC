@@ -1,19 +1,27 @@
-#ifndef TOOLS_H
-#define TOOLS_H
-#include <cstring>
-#include <string>
-#include <sstream>
+#ifndef GENDC_COMMON_H
+#define GENDC_COMMON_H
 
-#include "Descriptor.h"
+#include "genicam/pfnc_mapping.h"
+#include "gendc_separator/ContainerHeader.h"
+#include "gendc_separator/Descriptor.h"
 
-// *****************************************************************************
-// NOTE: the layout of the first 8 bytes will never change.
-//       this contains signature and version info
-// *****************************************************************************
+namespace gendc{
+namespace pfnc{
+    int32_t convert_pixelformat(std::string name){
+        return pfnc_data_str_key[name];
+    }
+
+    std::string convert_pixelformat(int32_t val){
+        return pfnc_data_int_key[val];
+    }
+} // namespace pfnc
+} // namespace gendc
+
+namespace gendc{
 
 bool isGenDC(char* buf){
     int32_t signature;
-    std::memcpy(&signature, buf + SIGNATURE_OFFSET, sizeof(int32_t));
+    std::memcpy(&signature, buf + offset::SIGNATURE, sizeof(int32_t));
 
     if (signature != GENDC_SIGNATURE){
         std::cout << "[LOG ion-kit(gendc-separator)] The data is not genDC format" << std::endl;
@@ -22,10 +30,10 @@ bool isGenDC(char* buf){
     return true;
 }
 
-std::array<int8_t, 3> getGenDCVersion(char* buf){
+std::array<int8_t, 3> getVersion(char* buf){
     std::array<int8_t, 3> version;
     for (int i = 0; i < version.size(); ++i){
-        std::memcpy(&version.at(i), buf + VERSION_OFFSET + sizeof(int8_t)*i, sizeof(int8_t));
+        std::memcpy(&version.at(i), buf + offset::VERSION + sizeof(int8_t)*i, sizeof(int8_t));
     }
     return version;
 }
@@ -35,7 +43,7 @@ int32_t getDescriptorSize(char* buf, const int container_version, std::array<int
     int32_t descriptor_size;
 
     try{
-        std::memcpy(&descriptor_size, buf + (offset_for_version.at(container_version)).at(::descriptor_size), sizeof(int32_t));
+        std::memcpy(&descriptor_size, buf + offset::DESCRIPTOR_SIZE, sizeof(int32_t));
     }catch (std::out_of_range& e){
         std::stringstream ss;
         ss << "ERROR\t" << e.what() << ": "
@@ -51,4 +59,6 @@ int32_t getDescriptorSize(char* buf, const int container_version, std::array<int
     return descriptor_size;
 }
 
-#endif /*TOOLS_H*/
+} // namespace gendc
+
+#endif /*GENDC_COMMON_H*/

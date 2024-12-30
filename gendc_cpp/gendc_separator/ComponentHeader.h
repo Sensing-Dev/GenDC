@@ -1,8 +1,8 @@
-#ifndef COMPONENTHEADER_H
-#define COMPONENTHEADER_H
+#ifndef GENDC_SEPARATOR_COMPONENTHEADER_H
+#define GENDC_SEPARATOR_COMPONENTHEADER_H
 
 #include "PartHeader.h"
-
+namespace gendc{
 class ComponentHeader : public Header{
 public:
     ComponentHeader(){}
@@ -158,6 +158,6 @@ private:
 
     char* container_;
 };
+}
 
-
-#endif /*COMPONENTHEADER_H*/
+#endif /*GENDC_SEPARATOR_COMPONENTHEADER_H*/
