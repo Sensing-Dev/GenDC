@@ -32,6 +32,7 @@ summary (
 # header library
 install_subdir('gendc_cpp/gendc_separator', install_dir: header_lib_install_dir)
 install_subdir('gendc_cpp/genicam', install_dir: header_lib_install_dir)
+install_headers('gendc_common.h', install_dir: header_lib_install_dir)
 
 # gst-plugin
 gst_dep = [dependency('gstreamer-1.0', required: gst_enabled)]
