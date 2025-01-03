@@ -1,6 +1,8 @@
 #ifndef GENDC_COMMON_H
 #define GENDC_COMMON_H
 
+#include <sstream>
+
 #include "genicam/pfnc_mapping.h"
 #include "gendc_separator/ContainerHeader.h"
 #include "gendc_separator/Descriptor.h"
