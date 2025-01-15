@@ -72,8 +72,6 @@ static GstStaticPadTemplate component_src_factory = GST_STATIC_PAD_TEMPLATE ("co
 #define gst_gendc_separator_parent_class parent_class
 G_DEFINE_TYPE (GstGenDCSeparator, gst_gendc_separator, GST_TYPE_ELEMENT);
 
-GST_ELEMENT_REGISTER_DEFINE (gendc_separator, "gendcseparator", GST_RANK_NONE,
-    GST_TYPE_GENDCSEPARATOR);
 
 static void gst_gendc_separator_set_property (GObject * object,
     guint prop_id, const GValue * value, GParamSpec * pspec);
